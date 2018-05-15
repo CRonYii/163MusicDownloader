@@ -4,6 +4,7 @@ import entity.Album;
 import entity.Artist;
 import entity.Playlist;
 import entity.Song;
+import net.sf.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -11,10 +12,7 @@ import org.jsoup.select.Elements;
 import ui.Center;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Spider {
 
@@ -22,6 +20,7 @@ public class Spider {
     private static final String SONG_URL = "http://music.163.com/song";
     private static final String ALBUM_URL = "http://music.163.com/album";
     private static final String ARTIST_URL = "http://music.163.com/artist/album";
+    private static final String SEARCH_URL = "http://music.163.com/weapi/search/get";
     private static final String DOWNLOADER_URL = "https://ouo.us/fm/163/";
 
     /* The number of albums to display in one page, set to 1000 because want all albums at once */
@@ -218,5 +217,27 @@ public class Spider {
         }
     }
 
-}
+    public static void search(String keyword, String type) throws IOException {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("s", keyword);
+        jsonInput.put("type", type);
+        jsonInput.put("offset", "0");
+        jsonInput.put("limit", "20");
+        jsonInput.put("csrf_token", "");
 
+        Map<String, String> params = EncryptUtils.encrypt(jsonInput.toString());
+        Connection connection = get163Connection(SEARCH_URL);
+        Connection.Response response = connection.data(params)
+                .method(Connection.Method.POST)
+                .ignoreContentType(true)
+                .execute();
+
+        JSONObject data = JSONObject.fromObject(response.body());
+        DataParser.getSongList(data);
+    }
+
+    public static void main(String[] args) throws IOException {
+        search("瞬き", "1");
+    }
+
+}
