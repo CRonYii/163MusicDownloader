@@ -2,15 +2,15 @@ package ui;
 
 public class ToggleData {
 
-    private final RunnableEvent event;
+    private final ReadStringEvent event;
     private final String data;
 
-    public ToggleData(RunnableEvent event, String data) {
+    public ToggleData(ReadStringEvent event, String data) {
         this.event = event;
         this.data = data;
     }
 
-    public RunnableEvent getEvent() {
+    public ReadStringEvent getEvent() {
         return event;
     }
 

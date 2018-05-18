@@ -66,6 +66,8 @@ public class Downloader {
      * @param download the download to be added
      */
     private synchronized void addDownload(Download download) {
+        if (downloadList.contains(download))
+            return;
         Platform.runLater(() -> {
             downloadList.add(download);
             threadPool.execute(download);
@@ -196,6 +198,18 @@ public class Downloader {
 
         public Song getSong() {
             return song;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null)
+                return false;
+            if (this == o)
+                return true;
+            if (!(o instanceof Download))
+                return false;
+            Download download = (Download) o;
+            return this.song.equals(download.song);
         }
     }
 

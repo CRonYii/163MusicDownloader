@@ -4,7 +4,7 @@ import ui.Center;
 import util.Downloader;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 public class Playlist implements Serializable {
 
@@ -12,9 +12,9 @@ public class Playlist implements Serializable {
 
     private final String id;
     private final String title;
-    private Set<Song> songList;
+    private List<Song> songList;
 
-    public Playlist(String id, String title, Set<Song> songList) {
+    public Playlist(String id, String title, List<Song> songList) {
         this.id = id;
         this.title = title;
         this.songList = songList;
@@ -33,11 +33,11 @@ public class Playlist implements Serializable {
         return title;
     }
 
-    public Set<Song> getSongList() {
+    public List<Song> getSongList() {
         return songList;
     }
 
-    public void setSongList(Set<Song> songList) {
+    public void setSongList(List<Song> songList) {
         this.songList = songList;
     }
 

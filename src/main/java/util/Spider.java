@@ -12,9 +12,9 @@ import org.jsoup.select.Elements;
 import ui.Center;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Spider {
 
@@ -57,7 +57,7 @@ public class Spider {
     }
 
     public static Playlist getPlaylistByID(String playlistId) throws IOException, ElementNotFoundException {
-        Set<Song> songList = new HashSet<>();
+        List<Song> songList = new ArrayList<>();
         Element body = get163Connection(PLAYLIST_URL)
                 .data("id", playlistId)
                 .get().body();
@@ -77,7 +77,7 @@ public class Spider {
     }
 
     public static Album getAlbumByID(String albumID) throws IOException, ElementNotFoundException {
-        Set<Song> songList = new HashSet<>();
+        List<Song> songList = new ArrayList<>();
         Element body = get163Connection(ALBUM_URL)
                 .data("id", albumID)
                 .get().body();
@@ -144,7 +144,7 @@ public class Spider {
         if (artistName == null)
             throw new ElementNotFoundException("Unable to get artist, id: " + artistID);
 
-        Set<Album> albumSet = new HashSet<>();
+        List<Album> albumSet = new ArrayList<>();
         Elements eleInfo = body.selectFirst("ul[class=m-cvrlst m-cvrlst-alb4 f-cb]").select("a[class=icon-play f-alpha]");
         if (eleInfo == null)
             throw new ElementNotFoundException("Unable to get albums, id: " + artistID);
@@ -185,10 +185,10 @@ public class Spider {
         }
     }
 
-    public static Set<Song> search(String keyword, String type) throws IOException {
+    public static List<Song> search(String keyword) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("s", keyword);
-        jsonInput.put("type", type);
+        jsonInput.put("type", TYPE_SONG);
         jsonInput.put("offset", "0");
         jsonInput.put("limit", "30");
         jsonInput.put("csrf_token", "");
@@ -202,6 +202,23 @@ public class Spider {
 
         JSONObject data = JSONObject.fromObject(response.body());
         return DataParser.getSongList(data);
+    }
+
+    public static List<Song> getSongListFromMusicFM(String url) throws IOException {
+        Element body = Jsoup.connect(url)
+                .get()
+                .body();
+        Elements songEleList = body.selectFirst("div[class=list]").select("a[class=jstracker]");
+        List<Song> songList = new ArrayList<>();
+        for (Element songEle : songEleList) {
+            String title = songEle.selectFirst("h3").text();
+            String artist = songEle.selectFirst("p").text();
+            if (title.contains(artist))
+                title = title.substring(artist.length() + 3);
+            Song song = search(title + " " + artist).get(0);
+            songList.add(song);
+        }
+        return songList;
     }
 
 }

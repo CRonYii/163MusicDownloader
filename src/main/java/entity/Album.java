@@ -4,8 +4,8 @@ import ui.Center;
 import util.Downloader;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Album implements Serializable {
 
@@ -14,13 +14,13 @@ public class Album implements Serializable {
     private final Artist artist;
     private final String name;
     private final String id;
-    private final Set<Song> songList;
+    private final List<Song> songList;
 
     public Album(Artist artist, String name, String id) {
-        this(artist, name, id, new HashSet<>());
+        this(artist, name, id, new ArrayList<>());
     }
 
-    public Album(Artist artist, String name, String id, Set<Song> songList) {
+    public Album(Artist artist, String name, String id, List<Song> songList) {
         this.artist = artist;
         this.name = name;
         this.id = id;
@@ -49,8 +49,8 @@ public class Album implements Serializable {
     public Artist getArtist() {
         return artist;
     }
-    
-    public Set<Song> getSongList() {
+
+    public List<Song> getSongList() {
         return songList;
     }
 

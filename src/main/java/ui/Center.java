@@ -26,7 +26,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,8 +79,8 @@ public class Center {
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             // use regex to fetch song id from url if necessary
             String id = textField.getText().trim();
-            if (!id.matches("^\\d*$")) {
-                String regex = tag + "\\?id=(\\d*)";
+            if (!id.matches("^[0-9]*$")) {
+                String regex = tag + "\\?id=([0-9]*)";
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(id);
                 if (matcher.find())
@@ -111,7 +110,7 @@ public class Center {
         Center.searchView = searchView;
     }
 
-    public static void setSearchList(Set<Song> searchList) {
+    public static void setSearchList(List<Song> searchList) {
         Platform.runLater(() -> {
             ObservableList<Song> dataList = FXCollections.observableArrayList(searchList);
             searchView.setRoot(new RecursiveTreeItem<>(dataList, RecursiveTreeObject::getChildren));

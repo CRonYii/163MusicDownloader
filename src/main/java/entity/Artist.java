@@ -3,8 +3,8 @@ package entity;
 import util.Database;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Artist implements Serializable {
 
@@ -12,17 +12,17 @@ public class Artist implements Serializable {
 
     private final String name;
     private final String id;
-    private final Set<Album> albumList;
+    private final List<Album> albumList;
 
     public Artist(String name) {
-        this(name, null, new HashSet<>());
+        this(name, null, new ArrayList<>());
     }
     
     public Artist(String name, String id) {
-        this(name, id, new HashSet<>());
+        this(name, id, new ArrayList<>());
     }
 
-    public Artist(String name, String id, Set<Album> albumList) {
+    public Artist(String name, String id, List<Album> albumList) {
         this.name = name;
         this.id = id;
         this.albumList = albumList;
@@ -48,7 +48,7 @@ public class Artist implements Serializable {
         return id;
     }
 
-    public Set<Album> getAlbumList() {
+    public List<Album> getAlbumList() {
         return albumList;
     }
 

@@ -8,14 +8,14 @@ import util.ElementNotFoundException;
 import util.Spider;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface RunnableEvent {
+public interface ReadStringEvent {
 
-    boolean run(String id);
+    boolean run(String param);
 
-    class PlaylistDownloadEvent implements RunnableEvent {
+    class PlaylistDownloadEvent implements ReadStringEvent {
 
         @Override
         public boolean run(String id) {
@@ -35,7 +35,7 @@ public interface RunnableEvent {
         }
     }
 
-    class SongDownloadEvent implements RunnableEvent {
+    class SongDownloadEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -53,7 +53,7 @@ public interface RunnableEvent {
         }
     }
 
-    class AlbumDownloadEvent implements RunnableEvent {
+    class AlbumDownloadEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -71,7 +71,7 @@ public interface RunnableEvent {
         }
     }
 
-    class ArtistDownloadEvent implements RunnableEvent {
+    class ArtistDownloadEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -89,7 +89,21 @@ public interface RunnableEvent {
         }
     }
 
-    class PlaylistSearchEvent implements RunnableEvent {
+    class FetchMusicFMEvent implements ReadStringEvent {
+        @Override
+        public boolean run(String url) {
+            try {
+                List<Song> songList = Spider.getSongListFromMusicFM(url);
+                Center.setSearchList(songList);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    class PlaylistSearchEvent implements ReadStringEvent {
 
         @Override
         public boolean run(String id) {
@@ -109,12 +123,12 @@ public interface RunnableEvent {
         }
     }
 
-    class SongSearchEvent implements RunnableEvent {
+    class SongSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
                 Song song = Database.getSong(id);
-                Set<Song> songList = new HashSet<>();
+                List<Song> songList = new ArrayList<>();
                 songList.add(song);
                 Center.setSearchList(songList);
             } catch (IOException e) {
@@ -130,7 +144,7 @@ public interface RunnableEvent {
         }
     }
 
-    class AlbumSearchEvent implements RunnableEvent {
+    class AlbumSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -148,12 +162,12 @@ public interface RunnableEvent {
         }
     }
 
-    class ArtistSearchEvent implements RunnableEvent {
+    class ArtistSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
-                Set<Album> albumList = Database.getArtist(id).getAlbumList();
-                Set<Song> songList = new HashSet<>();
+                List<Album> albumList = Database.getArtist(id).getAlbumList();
+                List<Song> songList = new ArrayList<>();
                 for (Album a : albumList)
                     songList.addAll(a.getSongList());
                 Center.setSearchList(songList);
@@ -170,11 +184,11 @@ public interface RunnableEvent {
         }
     }
 
-    class KeywordSearchEvent implements RunnableEvent {
+    class KeywordSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String keyword) {
             try {
-                Set<Song> songList = Spider.search(keyword, Spider.TYPE_SONG);
+                List<Song> songList = Spider.search(keyword);
                 Center.setSearchList(songList);
             } catch (IOException e) {
                 e.printStackTrace();

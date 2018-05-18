@@ -9,17 +9,17 @@ import net.sf.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataParser {
 
-    public static Set<Song> getSongList(JSONObject data) {
+    public static List<Song> getSongList(JSONObject data) {
         if ((int) data.get("code") != 200)
             return null;
         JSONObject result = data.getJSONObject("result");
         JSONArray songs = result.getJSONArray("songs");
-        Set<Song> songSet = new HashSet<>();
+        List<Song> songSet = new ArrayList<>();
         for (int i = 0; i < songs.size(); i++) {
             JSONObject song = songs.getJSONObject(i);
             songSet.add(getSong(song));
