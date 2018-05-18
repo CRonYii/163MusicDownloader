@@ -19,7 +19,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
 
     private final String id;
     private final String title;
-    private String trackNo;
     private Artist artist;
     private Album album;
     private String downloadURL;
@@ -29,10 +28,9 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     private transient StringProperty artistName;
     private transient StringProperty albumName;
 
-    public Song(String id, String title, String trackNo, Artist artist, Album album) {
+    public Song(String id, String title, Artist artist, Album album) {
         this.id = id;
         this.title = Downloader.makeStringValidForWindowsFile(title);
-        this.trackNo = trackNo;
         setArtist(artist);
         setAlbum(album);
 
@@ -44,12 +42,8 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         Database.addSong(this);
     }
 
-    public Song(String id, String title, Artist artist, Album album) {
-        this(id, title, null, artist, album);
-    }
-
     public Song(String id, String title) {
-        this(id, title, null, null, null);
+        this(id, title, null, null);
     }
 
     /**
@@ -157,14 +151,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         return albumName;
 
 
-    }
-
-    public String getTrackNo() {
-        return trackNo;
-    }
-
-    public void setTrackNo(String trackNo) {
-        this.trackNo = trackNo;
     }
 
     public Artist getArtist() {

@@ -3,6 +3,7 @@ package ui;
 import entity.Album;
 import entity.Playlist;
 import entity.Song;
+import util.Database;
 import util.ElementNotFoundException;
 import util.Spider;
 
@@ -19,7 +20,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Playlist playlist = Spider.getPlaylistByID(id);
+                Playlist playlist = Database.getPlaylist(id);
                 playlist.downloadAllSongs();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
@@ -38,7 +39,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Spider.getSongByID(id).download();
+                Database.getSong(id).download();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download song, id: %s\n", id));
                 System.err.printf("Unable to download song, id: %s\n", id);
@@ -56,7 +57,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Spider.getAlbumByID(id).downloadAllSongs();
+                Database.getAlbum(id).downloadAllSongs();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
                 System.err.printf("Unable to download album, id: %s\n", id);
@@ -74,7 +75,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Spider.getArtistByID(id).downloadAllAlbum();
+                Database.getArtist(id).downloadAllAlbum();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download artist's songs, id: %s\n", id));
                 System.err.printf("Unable to download artist's songs, id: %s\n", id);
@@ -93,7 +94,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Playlist playlist = Spider.getPlaylistByID(id);
+                Playlist playlist = Database.getPlaylist(id);
                 Center.setSearchList(playlist.getSongList());
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
@@ -112,7 +113,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Song song = Spider.getSongByID(id);
+                Song song = Database.getSong(id);
                 Set<Song> songList = new HashSet<>();
                 songList.add(song);
                 Center.setSearchList(songList);
@@ -133,7 +134,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Center.setSearchList(Spider.getAlbumByID(id).getSongList());
+                Center.setSearchList(Database.getAlbum(id).getSongList());
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
                 System.err.printf("Unable to download album, id: %s\n", id);
@@ -151,7 +152,7 @@ public interface RunnableEvent {
         @Override
         public boolean run(String id) {
             try {
-                Set<Album> albumList = Spider.getArtistByID(id).getAlbumList();
+                Set<Album> albumList = Database.getArtist(id).getAlbumList();
                 Set<Song> songList = new HashSet<>();
                 for (Album a : albumList)
                     songList.addAll(a.getSongList());
@@ -162,6 +163,20 @@ public interface RunnableEvent {
                 return false;
             } catch (ElementNotFoundException e) {
                 Center.printToStatus(String.format("Unable to get artist's songs, id: %s\n", id));
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    class KeywordSearchEvent implements RunnableEvent {
+        @Override
+        public boolean run(String keyword) {
+            try {
+                Set<Song> songList = Spider.search(keyword, Spider.TYPE_SONG);
+                Center.setSearchList(songList);
+            } catch (IOException e) {
                 e.printStackTrace();
                 return false;
             }

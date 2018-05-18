@@ -1,12 +1,8 @@
 package entity;
 
 import ui.Center;
-import util.Database;
 import util.Downloader;
-import util.ElementNotFoundException;
-import util.Spider;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -18,16 +14,10 @@ public class Playlist implements Serializable {
     private final String title;
     private Set<Song> songList;
 
-    public Playlist(String id, String title) throws IOException, ElementNotFoundException {
-        this(id, title, Spider.getSongByPlaylist(id));
-    }
-
     public Playlist(String id, String title, Set<Song> songList) {
         this.id = id;
         this.title = title;
         this.songList = songList;
-
-        Database.addPlaylist(this);
     }
 
     public void downloadAllSongs() {
@@ -50,7 +40,6 @@ public class Playlist implements Serializable {
     public void setSongList(Set<Song> songList) {
         this.songList = songList;
     }
-
 
     public int size() {
         return songList.size();

@@ -1,7 +1,6 @@
 package entity;
 
 import ui.Center;
-import util.Database;
 import util.Downloader;
 
 import java.io.Serializable;
@@ -28,7 +27,6 @@ public class Album implements Serializable {
         this.songList = songList;
 
         artist.addAlbum(this);
-        Database.addAlbum(this);
     }
 
     public void addSong(Song song) {

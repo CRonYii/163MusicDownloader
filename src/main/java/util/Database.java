@@ -73,36 +73,69 @@ public class Database implements Serializable {
         return database;
     }
 
-    public static Song getSong(String id) {
-        return getInstance().songMap.get(id);
+    public static Song getSong(String id) throws IOException, ElementNotFoundException {
+        if (hasSong(id))
+            return getInstance().songMap.get(id);
+        Song song = Spider.getSongByID(id);
+        addSong(song);
+        return song;
     }
 
     public static void addSong(Song song) {
         getInstance().songMap.putIfAbsent(song.getId(), song);
     }
 
-    public static Artist getArtist(String id) {
-        return getInstance().artistMap.get(id);
+    public static boolean hasSong(String id) {
+        return getInstance().songMap.containsKey(id);
+    }
+
+    public static Artist getArtist(String id) throws IOException, ElementNotFoundException {
+        if (hasArtist(id))
+            return getInstance().artistMap.get(id);
+        Artist artist = Spider.getArtistByID(id);
+        addArtist(artist);
+        return artist;
     }
 
     public static void addArtist(Artist artist) {
         getInstance().artistMap.putIfAbsent(artist.getId(), artist);
     }
 
-    public static Album getAlbum(String id) {
-        return getInstance().albumMap.get(id);
+    public static boolean hasArtist(String id) {
+        return getInstance().artistMap.containsKey(id);
+    }
+
+    public static Album getAlbum(String id) throws IOException, ElementNotFoundException {
+        if (hasAlbum(id))
+            return getInstance().albumMap.get(id);
+        Album album = Spider.getAlbumByID(id);
+        addAlbum(album);
+        return album;
     }
 
     public static void addAlbum(Album album) {
         getInstance().albumMap.putIfAbsent(album.getId(), album);
     }
 
-    public static Playlist getPlaylist(String id) {
-        return getInstance().playlistMap.get(id);
+    public static boolean hasAlbum(String id) {
+        return getInstance().albumMap.containsKey(id);
+    }
+
+    public static Playlist getPlaylist(String id) throws IOException, ElementNotFoundException {
+        if (hasPlaylist(id))
+            return getInstance().playlistMap.get(id);
+        Playlist playlist = Spider.getPlaylistByID(id);
+        addPlaylist(playlist);
+
+        return playlist;
     }
 
     public static void addPlaylist(Playlist playlist) {
         getInstance().playlistMap.putIfAbsent(playlist.getId(), playlist);
+    }
+
+    public static boolean hasPlaylist(String id) {
+        return getInstance().playlistMap.containsKey(id);
     }
 
     public File getSongDir() {
@@ -112,4 +145,5 @@ public class Database implements Serializable {
     public void setSongDir(File songDir) {
         SONG_DIR = songDir;
     }
+
 }

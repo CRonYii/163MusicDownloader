@@ -107,7 +107,6 @@ public class Downloader {
         id3v2Tag.setArtist(song.getArtist().getName());
         id3v2Tag.setTitle(song.getTitleProperty());
         id3v2Tag.setAlbum(song.getAlbum().getName());
-        id3v2Tag.setTrack(song.getTrackNo());
         String newFileName = Database.database.getSongDir() + "\\" + id3v2Tag.getArtist() + " - " + id3v2Tag.getTitle() + ".mp3";
         mp3file.save(newFileName);
         fp.delete();

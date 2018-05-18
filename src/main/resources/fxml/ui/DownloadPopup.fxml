@@ -16,4 +16,5 @@
     <JFXButton text="All Songs of an Artist" onAction="#downloadArtist" prefWidth="Infinity"/>
     <Separator orientation="HORIZONTAL"/>
     <JFXButton text="Open Songs Folder" onAction="#openSongsFolder" prefWidth="Infinity"/>
+    <JFXButton text="Download Songs from JSON" onAction="#downloadFromJSON" prefWidth="Infinity"/>
 </VBox>
