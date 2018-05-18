@@ -11,8 +11,7 @@ import ui.Center;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Collection;
@@ -45,6 +44,8 @@ public class Downloader {
         if (!TEMP_DIR.exists())
             TEMP_DIR.mkdir();
         downloadList = FXCollections.synchronizedObservableList(FXCollections.observableList(new LinkedList<Download>()));
+        // set Cookie Manager
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
     }
 
     public static String makeStringValidForWindowsFile(String str) {
