@@ -155,6 +155,6 @@ public class Center {
     }
 
     public static void toast(String msg, long timeout) {
-        toast.show(msg, timeout);
+        Platform.runLater(() -> toast.show(msg, timeout));
     }
 }

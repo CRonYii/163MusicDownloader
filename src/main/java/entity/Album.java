@@ -57,7 +57,7 @@ public class Album implements Serializable {
     @Override
     public String toString() {
         return "Album{" +
-                "artist=" + artist +
+                "artist=" + artist.getName() +
                 ", name='" + name + '\'' +
                 ", id='" + id + '\'' +
                 ", songList=" + songList +

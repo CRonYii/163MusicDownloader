@@ -25,7 +25,7 @@ public class EncryptUtils {
     private static final String ENCSECKEY = "encSecKey";
 
     public static Map<String, String> encrypt(String text) {
-        String secKey = RandomStringUtils.random(16, "0123456789abcde");
+        String secKey = RandomStringUtils.random(16, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         String encText = aesEncrypt(aesEncrypt(text, nonce), secKey);
         String encSecKey = rsaEncrypt(secKey, pubKey, modulus);
 

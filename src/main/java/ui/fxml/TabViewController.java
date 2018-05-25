@@ -69,10 +69,10 @@ public class TabViewController implements Initializable {
 
 
     private void setUpRdToggle() {
-        setUpRadioButton(new ReadStringEvent.IdPlaylistSearchEvent(), "playlist");
-        setUpRadioButton(new ReadStringEvent.IdArtistSearchEvent(), "artist");
-        setUpRadioButton(new ReadStringEvent.IdAlbumSearchEvent(), "album");
-        setUpRadioButton(new ReadStringEvent.IdSongSearchEvent(), "song");
+        setUpRadioButton(new StringParamEvent.IdPlaylistSearchEvent(), "playlist");
+        setUpRadioButton(new StringParamEvent.IdArtistSearchEvent(), "artist");
+        setUpRadioButton(new StringParamEvent.IdAlbumSearchEvent(), "album");
+        setUpRadioButton(new StringParamEvent.IdSongSearchEvent(), "song");
 
         selectToggle.selectedToggleProperty().addListener(
                 event -> Center.setUpIdValidationTextField(
@@ -81,7 +81,7 @@ public class TabViewController implements Initializable {
         selectToggle.selectToggle(selectToggle.getToggles().get(0));
     }
 
-    private void setUpRadioButton(ReadStringEvent event, String data) {
+    private void setUpRadioButton(StringParamEvent event, String data) {
         JFXRadioButton radioButton = new JFXRadioButton(data.substring(0, 1).toUpperCase() + data.substring(1));
         radioButton.setPadding(new Insets(10));
         radioButton.setToggleGroup(selectToggle);
@@ -95,7 +95,7 @@ public class TabViewController implements Initializable {
             // Start a new Thread to search in background
             String id = searchTextField.getText();
             searchTextField.clear();
-            ReadStringEvent event = ((ToggleData) selectToggle.getSelectedToggle().getUserData()).getEvent();
+            StringParamEvent event = ((ToggleData) selectToggle.getSelectedToggle().getUserData()).getEvent();
             ReadStringTask searchTask = new ReadStringTask(id, event);
             searchProgress.visibleProperty().bind(searchTask.runningProperty());
             ThreadUtils.startNormalThread(searchTask);
@@ -118,7 +118,7 @@ public class TabViewController implements Initializable {
                     JFXButton button = new JFXButton("Download");
                     button.setStyle("-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;");
                     button.setButtonType(JFXButton.ButtonType.RAISED);
-                    button.setOnAction(event -> ThreadUtils.startNormalThread(new ReadStringTask(id, new ReadStringEvent.SongDownloadEvent())));
+                    button.setOnAction(event -> ThreadUtils.startNormalThread(new ReadStringTask(id, new StringParamEvent.SongDownloadEvent())));
                     setGraphic(button);
                     setText("");
                 } else {

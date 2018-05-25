@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ReadStringEvent {
+public interface StringParamEvent {
 
     boolean run(String param);
 
-    class PlaylistDownloadEvent implements ReadStringEvent {
+    class PlaylistDownloadEvent implements StringParamEvent {
 
         @Override
         public boolean run(String id) {
@@ -35,10 +35,11 @@ public interface ReadStringEvent {
         }
     }
 
-    class SongDownloadEvent implements ReadStringEvent {
+    class SongDownloadEvent implements StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
+                Center.toast("Start Downloading Song " + Database.getSong(id).getTitle());
                 Database.getSong(id).download();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download song, id: %s\n", id));
@@ -53,7 +54,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class AlbumDownloadEvent implements ReadStringEvent {
+    class AlbumDownloadEvent implements StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -71,7 +72,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class ArtistDownloadEvent implements ReadStringEvent {
+    class ArtistDownloadEvent implements StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -89,7 +90,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class FetchMusicFMEvent implements ReadStringEvent {
+    class FetchMusicFMEvent implements StringParamEvent {
         @Override
         public boolean run(String url) {
             try {
@@ -103,7 +104,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class IdPlaylistSearchEvent implements ReadStringEvent {
+    class IdPlaylistSearchEvent implements StringParamEvent {
 
         @Override
         public boolean run(String id) {
@@ -124,7 +125,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class IdSongSearchEvent implements ReadStringEvent {
+    class IdSongSearchEvent implements StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -146,7 +147,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class IdAlbumSearchEvent implements ReadStringEvent {
+    class IdAlbumSearchEvent implements StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -165,7 +166,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class IdArtistSearchEvent implements ReadStringEvent {
+    class IdArtistSearchEvent implements StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
@@ -188,7 +189,7 @@ public interface ReadStringEvent {
         }
     }
 
-    class KeywordSongSearchEvent implements ReadStringEvent {
+    class KeywordSongSearchEvent implements StringParamEvent {
         @Override
         public boolean run(String keyword) {
             try {

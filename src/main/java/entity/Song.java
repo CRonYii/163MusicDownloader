@@ -3,14 +3,12 @@ package entity;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import ui.Center;
 import util.Database;
 import util.Downloader;
 import util.ElementNotFoundException;
 import util.Spider;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 
 public class Song extends RecursiveTreeObject<Song> implements Serializable {
@@ -21,7 +19,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     private final String title;
     private Artist artist;
     private Album album;
-    private String downloadURL;
 
     private transient StringProperty IDProperty;
     private transient StringProperty titleProperty;
@@ -57,33 +54,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
 
     public void download() {
         download(Downloader.TEMP_DIR);
-    }
-
-    public void setDownloadURL() {
-        setDownloadURL(0);
-    }
-
-    private void setDownloadURL(int tried) {
-        if (downloadURL != null) {
-            return;
-        }
-        try {
-            this.downloadURL = Spider.getSongDownloadURL(this.id);
-        } catch (IOException e) {
-            Database data = Database.getInstance();
-            if (tried < data.getReconnectionTimes()) {
-                System.err.printf("Failed to get Download URL, will try again in %s second, song: %s\n", data.getFailConnectionWaitTime(), getTitleProperty());
-                try {
-                    Thread.sleep(data.getFailConnectionWaitTime() * 1000);
-                } catch (InterruptedException e1) {
-                    // Let it go
-                }
-                setDownloadURL(tried + 1);
-            } else {
-                Center.printToStatus("Failed to get Download URL From ouo.us, give up, song: " + getTitleProperty());
-                System.err.println("Failed to get Download URL From ouo.us, give up, song: " + getTitleProperty());
-            }
-        }
     }
 
     public void setArtistAndAlbum() {
@@ -149,8 +119,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
 
     public StringProperty albumNameProperty() {
         return albumName;
-
-
     }
 
     public Artist getArtist() {
@@ -177,7 +145,7 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     }
 
     public String getDownloadURL() {
-        return downloadURL;
+        return Database.getSongDownloadURL(id);
     }
 
     @Override
@@ -187,7 +155,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
                 ", title='" + title + '\'' +
                 ", artist=" + (artist != null ? artist.getName() : "null") +
                 ", album=" + (album != null ? album.getName() : "null") +
-                ", downloadURL='" + downloadURL + '\'' +
                 '}';
     }
 

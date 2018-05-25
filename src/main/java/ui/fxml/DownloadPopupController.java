@@ -10,8 +10,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ui.Center;
-import ui.ReadStringEvent;
 import ui.ReadStringTask;
+import ui.StringParamEvent;
 import util.Database;
 import util.ThreadUtils;
 
@@ -22,22 +22,22 @@ public class DownloadPopupController {
 
     @FXML
     public void downloadPlaylist() {
-        promptEnterIDDialog(new ReadStringEvent.PlaylistDownloadEvent(), "playlist", "All songs in the playlist will be downloaded");
+        promptEnterIDDialog(new StringParamEvent.PlaylistDownloadEvent(), "playlist", "All songs in the playlist will be downloaded");
     }
 
     @FXML
     public void downloadSong() {
-        promptEnterIDDialog(new ReadStringEvent.SongDownloadEvent(), "song", "The Song will be downloaded");
+        promptEnterIDDialog(new StringParamEvent.SongDownloadEvent(), "song", "The Song will be downloaded");
     }
 
     @FXML
     public void downloadAlbum() {
-        promptEnterIDDialog(new ReadStringEvent.AlbumDownloadEvent(), "album", "All songs in the album will be downloaded");
+        promptEnterIDDialog(new StringParamEvent.AlbumDownloadEvent(), "album", "All songs in the album will be downloaded");
     }
 
     @FXML
     public void downloadArtist() {
-        promptEnterIDDialog(new ReadStringEvent.ArtistDownloadEvent(), "artist", "All songs of artist will be downloaded");
+        promptEnterIDDialog(new StringParamEvent.ArtistDownloadEvent(), "artist", "All songs of artist will be downloaded");
     }
 
     @FXML
@@ -52,10 +52,10 @@ public class DownloadPopupController {
 
     @FXML
     public void downloadFromMusicFM() {
-        promptEnterURLDialog(new ReadStringEvent.FetchMusicFMEvent(), "the most similar songs of playlist will be downloaded");
+        promptEnterURLDialog(new StringParamEvent.FetchMusicFMEvent(), "the most similar songs of playlist will be downloaded");
     }
 
-    private void promptEnterIDDialog(ReadStringEvent task, String tag, String promptMsg) {
+    private void promptEnterIDDialog(StringParamEvent task, String tag, String promptMsg) {
         JFXAlert alert = new JFXAlert((Stage) Center.getRootWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setOverlayClose(false);
@@ -92,7 +92,7 @@ public class DownloadPopupController {
         alert.show();
     }
 
-    private void promptEnterURLDialog(ReadStringEvent task, String promptMsg) {
+    private void promptEnterURLDialog(StringParamEvent task, String promptMsg) {
         JFXAlert alert = new JFXAlert((Stage) Center.getRootWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setOverlayClose(false);

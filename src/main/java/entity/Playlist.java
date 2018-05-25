@@ -44,4 +44,13 @@ public class Playlist implements Serializable {
     public int size() {
         return songList.size();
     }
+
+    @Override
+    public String toString() {
+        return "Playlist{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", songList=" + songList +
+                '}';
+    }
 }

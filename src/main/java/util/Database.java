@@ -21,6 +21,7 @@ public class Database implements Serializable {
     private final Map<String, Artist> artistMap = new HashMap<>();
     private final Map<String, Album> albumMap = new HashMap<>();
     private final Map<String, Playlist> playlistMap = new HashMap<>();
+    private final Map<String, String> songDownloadMap = new HashMap<>();
 
     private File SONG_DIR = new File("songs/");
 
@@ -71,6 +72,43 @@ public class Database implements Serializable {
 
     public static Database getInstance() {
         return database;
+    }
+
+    public static String setSongDownloadURL(String id, int tried) {
+        String url = null;
+        try {
+            url = Spider.getSongDownloadURL(id);
+            addSongDownloadURL(id, url);
+        } catch (IOException e) {
+            Database data = Database.getInstance();
+            if (tried < data.getReconnectionTimes()) {
+                System.err.printf("Failed to get Download URL, will try again in %s second, id: %s\n", data.getFailConnectionWaitTime(), id);
+                try {
+                    Thread.sleep(data.getFailConnectionWaitTime() * 1000);
+                } catch (InterruptedException e1) {
+                    // Let it go
+                }
+                setSongDownloadURL(id, tried + 1);
+            } else {
+                Center.printToStatus("Failed to get Download URL From ouo.us, give up, id: " + id);
+                System.err.println("Failed to get Download URL From ouo.us, give up, id: " + id);
+            }
+        }
+        return url;
+    }
+
+    public static String getSongDownloadURL(String id) {
+        if (hasSongDownloadURL(id))
+            return getInstance().songDownloadMap.get(id);
+        return setSongDownloadURL(id, 0);
+    }
+
+    public static void addSongDownloadURL(String id, String url) {
+        getInstance().songDownloadMap.putIfAbsent(id, url);
+    }
+
+    public static boolean hasSongDownloadURL(String id) {
+        return getInstance().songDownloadMap.containsKey(id);
     }
 
     public static Song getSong(String id) throws IOException, ElementNotFoundException {

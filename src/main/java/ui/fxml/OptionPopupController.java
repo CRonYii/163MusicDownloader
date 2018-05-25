@@ -4,7 +4,6 @@ import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
-import entity.Playlist;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +19,7 @@ import ui.Center;
 import ui.DirectoryValidator;
 import ui.PositiveNumberValidator;
 import util.Database;
+import util.ElementNotFoundException;
 import util.ThreadUtils;
 
 import javax.annotation.PostConstruct;
@@ -29,10 +29,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-import static util.Spider.searchPlaylist;
+import static util.Spider.searchArtist;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
 public class OptionPopupController implements Initializable {
@@ -160,13 +159,20 @@ public class OptionPopupController implements Initializable {
 
     public void debug() {
         ThreadUtils.startNormalThread(() -> {
+//            try {
+//                List<Playlist> list;
+//                list = searchPlaylist("轻音乐");
+//                for (Playlist playlist : list) {
+//                    System.out.println(playlist.getSongList());
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             try {
-                List<Playlist> list;
-                list = searchPlaylist("轻音乐");
-                for (Playlist playlist : list) {
-                    System.out.println(playlist.getSongList());
-                }
+                System.out.println(searchArtist("高桥优"));
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ElementNotFoundException e) {
                 e.printStackTrace();
             }
         });

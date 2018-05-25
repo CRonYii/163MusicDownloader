@@ -141,13 +141,13 @@ public class Downloader {
         }
 
         private void download() throws MalformedURLException {
-            song.setDownloadURL();
-            if (song.getDownloadURL() == null) {
+            String url = song.getDownloadURL();
+            if (url == null) {
                 Center.printToStatus("Unable to get URL for song " + song.getTitleProperty() + ", append task at the end of download list.");
                 addDownload(new Download(outputFile, song));
                 return;
             }
-            URL website = new URL(song.getDownloadURL());
+            URL website = new URL(url);
             ReadableByteChannel rbc = null;
             FileOutputStream fos = null;
             try {
@@ -155,7 +155,7 @@ public class Downloader {
                 fos = new FileOutputStream(outputFile);
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             } catch (IOException e) {
-                System.err.println("Unable to download from " + song.getDownloadURL());
+                System.err.println("Unable to download from " + url);
                 e.printStackTrace();
             } finally {
                 try {
@@ -167,14 +167,10 @@ public class Downloader {
             }
         }
 
-        @Override
-        public String toString() {
-            return song.getArtist().getName() + " - " + song.getTitleProperty() + " - " + getStatus();
-        }
-
-        public String getStatus() {
-            return (this.isRunning() ? "Downloading" : "Pending");
-        }
+//        @Override
+//        public void run() {
+//            call();
+//        }
 
         @Override
         protected Void call() {
@@ -198,6 +194,15 @@ public class Downloader {
 
         public Song getSong() {
             return song;
+        }
+
+        public String getStatus() {
+            return (this.isRunning() ? "Downloading" : "Pending");
+        }
+
+        @Override
+        public String toString() {
+            return song.getArtist().getName() + " - " + song.getTitleProperty() + " - " + getStatus();
         }
 
         @Override
