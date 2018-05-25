@@ -184,7 +184,7 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     public String toString() {
         return "Song{" +
                 "id='" + id + '\'' +
-                ", titleProperty='" + titleProperty + '\'' +
+                ", title='" + title + '\'' +
                 ", artist=" + (artist != null ? artist.getName() : "null") +
                 ", album=" + (album != null ? album.getName() : "null") +
                 ", downloadURL='" + downloadURL + '\'' +

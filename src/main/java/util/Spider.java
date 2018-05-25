@@ -23,6 +23,7 @@ public class Spider {
     private static final String ALBUM_URL = "http://music.163.com/album";
     private static final String ARTIST_URL = "http://music.163.com/artist/album";
     private static final String SEARCH_URL = "http://music.163.com/weapi/search/get";
+    private static final String PLAYLIST_URL_API = "http://music.163.com/weapi/playlist/detail";
     private static final String DOWNLOADER_URL = "https://ouo.us/fm/163/";
 
     /* The number of albums to display in one page, set to 1000 because want all albums at once */
@@ -185,7 +186,7 @@ public class Spider {
         }
     }
 
-    public static List<Song> search(String keyword) throws IOException {
+    public static List<Song> searchSong(String keyword) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("s", keyword);
         jsonInput.put("type", TYPE_SONG);
@@ -204,6 +205,25 @@ public class Spider {
         return DataParser.getSongList(data);
     }
 
+    public static List<Playlist> searchPlaylist(String keyword) throws IOException {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("s", keyword);
+        jsonInput.put("type", TYPE_PLAYLIST);
+        jsonInput.put("offset", "0");
+        jsonInput.put("limit", "30");
+        jsonInput.put("csrf_token", "");
+
+        Map<String, String> params = EncryptUtils.encrypt(jsonInput.toString());
+        Connection connection = get163Connection(SEARCH_URL);
+        Connection.Response response = connection.data(params)
+                .method(Connection.Method.POST)
+                .ignoreContentType(true)
+                .execute();
+
+        JSONObject data = JSONObject.fromObject(response.body());
+        return DataParser.getPlaylistList(data);
+    }
+
     public static List<Song> getSongListFromMusicFM(String url) throws IOException {
         Element body = Jsoup.connect(url)
                 .get()
@@ -215,7 +235,7 @@ public class Spider {
             String artist = songEle.selectFirst("p").text();
             if (title.contains(artist))
                 title = title.substring(artist.length() + 3);
-            Song song = search(title + " " + artist).get(0);
+            Song song = searchSong(title + " " + artist).get(0);
             songList.add(song);
         }
         return songList;

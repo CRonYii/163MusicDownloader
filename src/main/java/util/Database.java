@@ -36,7 +36,7 @@ public class Database implements Serializable {
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(OUTPUT));
                 Object obj = in.readObject();
-                Center.printToStatus("Successfully read data from previous database...");
+                Center.toast("Successfully read data from previous database...");
                 return (Database) obj;
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

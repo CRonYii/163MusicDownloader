@@ -1,6 +1,6 @@
 package ui;
 
-class PositiveNumberValidator extends ValidatorBaseAdvanced {
+public class PositiveNumberValidator extends ValidatorBaseAdvanced {
 
     public PositiveNumberValidator(String message) {
         super(message);

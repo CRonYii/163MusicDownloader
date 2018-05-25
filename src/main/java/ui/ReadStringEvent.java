@@ -103,11 +103,12 @@ public interface ReadStringEvent {
         }
     }
 
-    class PlaylistSearchEvent implements ReadStringEvent {
+    class IdPlaylistSearchEvent implements ReadStringEvent {
 
         @Override
         public boolean run(String id) {
             try {
+                Center.toast("Searching Playlist id: " + id);
                 Playlist playlist = Database.getPlaylist(id);
                 Center.setSearchList(playlist.getSongList());
             } catch (IOException e) {
@@ -123,10 +124,11 @@ public interface ReadStringEvent {
         }
     }
 
-    class SongSearchEvent implements ReadStringEvent {
+    class IdSongSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
+                Center.toast("Searching Song id: " + id);
                 Song song = Database.getSong(id);
                 List<Song> songList = new ArrayList<>();
                 songList.add(song);
@@ -144,10 +146,11 @@ public interface ReadStringEvent {
         }
     }
 
-    class AlbumSearchEvent implements ReadStringEvent {
+    class IdAlbumSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
+                Center.toast("Searching Album id: " + id);
                 Center.setSearchList(Database.getAlbum(id).getSongList());
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
@@ -162,10 +165,11 @@ public interface ReadStringEvent {
         }
     }
 
-    class ArtistSearchEvent implements ReadStringEvent {
+    class IdArtistSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String id) {
             try {
+                Center.toast("Searching Artist id: " + id);
                 List<Album> albumList = Database.getArtist(id).getAlbumList();
                 List<Song> songList = new ArrayList<>();
                 for (Album a : albumList)
@@ -184,11 +188,12 @@ public interface ReadStringEvent {
         }
     }
 
-    class KeywordSearchEvent implements ReadStringEvent {
+    class KeywordSongSearchEvent implements ReadStringEvent {
         @Override
         public boolean run(String keyword) {
             try {
-                List<Song> songList = Spider.search(keyword);
+                Center.toast("Searching Song keyword: " + keyword);
+                List<Song> songList = Spider.searchSong(keyword);
                 Center.setSearchList(songList);
             } catch (IOException e) {
                 e.printStackTrace();

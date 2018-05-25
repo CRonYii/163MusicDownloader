@@ -12,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import util.Downloader;
 
-class DownloadCell extends JFXListCell<Downloader.Download> {
+public class DownloadCell extends JFXListCell<Downloader.Download> {
 
     public DownloadCell() {
         ContextMenu contextMenu = new ContextMenu();

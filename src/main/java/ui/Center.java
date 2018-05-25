@@ -1,5 +1,6 @@
 package ui;
 
+import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -30,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Center {
+
+    public static long TOAST_FAST = 1000;
 
     private static Label statusLabel;
 
@@ -102,6 +105,8 @@ public class Center {
         return rootScene.getWindow();
     }
 
+    public static long TOAST_REGULAR = 2000;
+
     public static void setRootScene(Scene rootScene) {
         Center.rootScene = rootScene;
     }
@@ -136,5 +141,20 @@ public class Center {
 
     public static void setNewSongDir(File newSongDir) {
         Center.newSongDir = newSongDir;
+    }
+
+    public static long TOAST_SLOW = 4000;
+    private static JFXSnackbar toast;
+
+    public static void setToast(JFXSnackbar toast) {
+        Center.toast = toast;
+    }
+
+    public static void toast(String msg) {
+        toast(msg, TOAST_REGULAR);
+    }
+
+    public static void toast(String msg, long timeout) {
+        toast.show(msg, timeout);
     }
 }

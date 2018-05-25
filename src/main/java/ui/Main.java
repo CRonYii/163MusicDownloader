@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+// TODO: use Logger to log errors msg
 public class Main extends Application {
 
     public static final double WIDTH = 1200;

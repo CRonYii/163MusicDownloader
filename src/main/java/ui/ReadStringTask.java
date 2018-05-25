@@ -2,7 +2,7 @@ package ui;
 
 import javafx.concurrent.Task;
 
-class ReadStringTask extends Task<Void> {
+public class ReadStringTask extends Task<Void> {
 
     private final String str;
     private final ReadStringEvent event;

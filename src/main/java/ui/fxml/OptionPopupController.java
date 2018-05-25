@@ -1,9 +1,10 @@
-package ui;
+package ui.fxml;
 
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
+import entity.Playlist;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +16,11 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ui.Center;
+import ui.DirectoryValidator;
+import ui.PositiveNumberValidator;
 import util.Database;
+import util.ThreadUtils;
 
 import javax.annotation.PostConstruct;
 import java.awt.*;
@@ -24,7 +29,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import static util.Spider.searchPlaylist;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
 public class OptionPopupController implements Initializable {
@@ -148,6 +156,20 @@ public class OptionPopupController implements Initializable {
     public void exit() {
         Center.CLOSE_EVENT.handle(new WindowEvent(Center.getRootWindow(), WindowEvent.WINDOW_CLOSE_REQUEST));
         Platform.exit();
+    }
+
+    public void debug() {
+        ThreadUtils.startNormalThread(() -> {
+            try {
+                List<Playlist> list;
+                list = searchPlaylist("轻音乐");
+                for (Playlist playlist : list) {
+                    System.out.println(playlist.getSongList());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 
