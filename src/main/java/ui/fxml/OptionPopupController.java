@@ -7,7 +7,6 @@ import com.jfoenix.controls.JFXTextField;
 import entity.Artist;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -28,13 +27,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import static util.Spider.getArtistByID;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
-public class OptionPopupController implements Initializable {
+public class OptionPopupController {
 
     private VBox settingRoot;
 
@@ -48,9 +45,9 @@ public class OptionPopupController implements Initializable {
     private JFXAlert setting;
     private boolean isInit = false;
 
+    @FXML
     @PostConstruct
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         settingRoot = new VBox();
         settingRoot.setSpacing(20.0);
 

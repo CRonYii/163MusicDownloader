@@ -6,7 +6,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -16,13 +15,13 @@ import ui.*;
 import util.Downloader;
 import util.ThreadUtils;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import javax.annotation.PostConstruct;
 import java.util.function.Function;
 
 import static ui.Center.*;
 
-public class TabViewController implements Initializable {
+// TODO: 1. Make Entity Type Generic 2. Put the search View into separate class 3. Support All Entity Type display in searchView 4. implement Paging 5. Possibly Forward / Backward Navigation
+public class TabViewController {
 
     private RadioButtonGroup searchTypeButtonGroup;
 
@@ -38,14 +37,14 @@ public class TabViewController implements Initializable {
     private JFXListView<Downloader.Download> listView;
     @FXML
     private JFXTreeTableView<Song> searchView;
-    @FXML
-    private JFXTreeTableColumn<Song, String> titleColumn;
-    @FXML
-    private JFXTreeTableColumn<Song, String> artistColumn;
-    @FXML
-    private JFXTreeTableColumn<Song, String> albumColumn;
-    @FXML
-    private JFXTreeTableColumn<Song, String> actionColumn;
+    /*    @FXML
+        private JFXTreeTableColumn<Song, String> titleColumn;
+        @FXML
+        private JFXTreeTableColumn<Song, String> artistColumn;
+        @FXML
+        private JFXTreeTableColumn<Song, String> albumColumn;
+        @FXML
+        private JFXTreeTableColumn<Song, String> actionColumn;*/
     @FXML
     private JFXProgressBar searchProgress;
     @FXML
@@ -58,11 +57,10 @@ public class TabViewController implements Initializable {
     private Tab downloadTab;
     @FXML
     private JFXButton downloadSelectedButton;
-    @FXML
-    private JFXButton downloadAllButton;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    @PostConstruct
+    public void initialize() {
         setUpRdToggle();
         initSearchView();
 
@@ -127,7 +125,7 @@ public class TabViewController implements Initializable {
         searchView.setShowRoot(false);
         searchView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        setupCellValueFactory(titleColumn, Song::titlePropertyProperty);
+/*        setupCellValueFactory(titleColumn, Song::titlePropertyProperty);
         setupCellValueFactory(artistColumn, Song::artistNameProperty);
         setupCellValueFactory(albumColumn, Song::albumNameProperty);
         setupCellValueFactory(actionColumn, Song::IDPropertyProperty);
@@ -145,7 +143,7 @@ public class TabViewController implements Initializable {
                     setGraphic(null);
                 }
             }
-        });
+        });*/
 
         searchFilterField.textProperty().addListener((observable, oldValue, newValue) ->
                 searchView.setPredicate(songProp -> {

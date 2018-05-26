@@ -6,17 +6,14 @@ import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXSnackbar;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import ui.Center;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-public class MainController implements Initializable {
+public class MainController {
 
     @FXML
     private StackPane toastContainer;
@@ -49,9 +46,9 @@ public class MainController implements Initializable {
         loader.setController(this);
     }
 
+    @FXML
     @PostConstruct
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         JFXSnackbar toast = new JFXSnackbar(toastContainer);
         Center.setToast(toast);
         Center.setLabel(statusLabel);
