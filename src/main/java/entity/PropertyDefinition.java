@@ -9,9 +9,9 @@ public class PropertyDefinition {
     private final String name;
     private final String getter;
     private final String setter;
-    private Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>> cell;
+    private Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>> cell;
 
-    public PropertyDefinition(String name, String getter, String setter, Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>> cell) {
+    public PropertyDefinition(String name, String getter, String setter, Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>> cell) {
         this.name = name;
         this.getter = getter;
         this.setter = setter;
@@ -46,11 +46,11 @@ public class PropertyDefinition {
         return setter;
     }
 
-    public Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>> getCell() {
+    public Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>> getCell() {
         return cell;
     }
 
-    public PropertyDefinition setCell(Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>> cell) {
+    public PropertyDefinition setCell(Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>> cell) {
         this.cell = cell;
         return this;
     }

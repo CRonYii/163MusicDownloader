@@ -2,6 +2,7 @@ package ui.fxml;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import entity.DownloadableEntity;
 import entity.Entity;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -40,9 +41,9 @@ public class TabViewController {
     @FXML
     private HBox searchBox;
     @FXML
-    private JFXListView<Downloader.Download> listView;
+    private JFXListView<Downloader.Download> downloadListView;
     @FXML
-    private JFXTreeTableView<Entity> searchView;
+    private JFXTreeTableView<DownloadableEntity> searchView;
     @FXML
     private JFXProgressBar searchProgress;
     @FXML
@@ -66,8 +67,8 @@ public class TabViewController {
         setUpRdToggle();
         initSearchView();
 
-        listView.setItems(Downloader.downloader.getDownloadList());
-        listView.setCellFactory(cell -> new DownloadCell());
+        downloadListView.setItems(Downloader.downloader.getDownloadList());
+        downloadListView.setCellFactory(cell -> new DownloadCell());
 
         downloadTab.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Download (%s)", Downloader.downloader.getDownloadList().size()),
@@ -143,13 +144,13 @@ public class TabViewController {
         );
     }
 
-    public void setSearchList(List<Entity> searchList) {
+    public void setSearchList(List<DownloadableEntity> searchList) {
         if (searchList.isEmpty()) {
             Center.toast(String.format("Found 0 results on Search"), TOAST_LONG);
             return;
         }
         Platform.runLater(() -> {
-            ObservableList<Entity> dataList = FXCollections.observableArrayList(searchList);
+            ObservableList<DownloadableEntity> dataList = FXCollections.observableArrayList(searchList);
             searchListLabel.setText(String.format("Found %s results", searchList.size()));
 
             searchView.getColumns().clear();
@@ -157,9 +158,9 @@ public class TabViewController {
             List<String> columns = entity.getColumns();
             double width = Main.WIDTH / columns.size();
             columns.forEach(columnName -> {
-                JFXTreeTableColumn<Entity, String> column = new JFXTreeTableColumn<>(columnName);
+                JFXTreeTableColumn<DownloadableEntity, String> column = new JFXTreeTableColumn<>(columnName);
                 column.setPrefWidth(width);
-                setUpCellValueFactory(column, (Entity e) -> e.getPropertyMap().get(columnName));
+                setUpCellValueFactory(column, (DownloadableEntity e) -> e.getPropertyMap().get(columnName));
                 if (entity.getColumnFactoryMap().containsKey(columnName) && entity.getColumnFactoryMap().get(columnName) != null)
                     column.setCellFactory(entity.getColumnFactoryMap().get(columnName));
                 searchView.getColumns().add(column);
@@ -168,8 +169,8 @@ public class TabViewController {
         });
     }
 
-    private void setUpCellValueFactory(JFXTreeTableColumn<Entity, String> column, Function<Entity, StringProperty> mapper) {
-        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Entity, String> param) -> {
+    private void setUpCellValueFactory(JFXTreeTableColumn<DownloadableEntity, String> column, Function<DownloadableEntity, StringProperty> mapper) {
+        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<DownloadableEntity, String> param) -> {
             if (column.validateValue(param)) {
                 return mapper.apply(param.getValue().getValue());
             } else {
@@ -233,20 +234,19 @@ public class TabViewController {
         searchBox.getChildren().add(0, searchTextField);
     }
 
-    // TODO: Might need Entity Support Download
     @FXML
     public void downloadAll() {
         if (searchView.getRoot() == null)
             return;
-        for (TreeItem<Entity> songTreeItem : searchView.getRoot().getChildren()) {
-//            songTreeItem.getValue().download();
+        for (TreeItem<DownloadableEntity> entityTreeItem : searchView.getRoot().getChildren()) {
+            entityTreeItem.getValue().download();
         }
     }
 
     @FXML
     public void downloadSelected() {
-        for (TreeTablePosition<Entity, ?> cell : searchView.getSelectionModel().getSelectedCells()) {
-//            cell.getTreeItem().getValue().download();
+        for (TreeTablePosition<DownloadableEntity, ?> cell : searchView.getSelectionModel().getSelectedCells()) {
+            cell.getTreeItem().getValue().download();
         }
     }
 }

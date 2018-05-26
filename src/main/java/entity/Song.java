@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Song extends Entity implements Serializable {
+public class Song extends DownloadableEntity implements Serializable {
 
     private static final long serialVersionUID = 501L;
 

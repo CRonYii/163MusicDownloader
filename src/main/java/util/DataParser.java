@@ -6,6 +6,7 @@ import entity.Playlist;
 import entity.Song;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import ui.Center;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +14,13 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: instead of returning Null, throw an exception or toast an error message
 public class DataParser {
 
     public static List<Song> getSongList(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Songs");
+            throw new APIAccessFailureException("Failure on API access when searching for Songs");
+        }
         JSONObject result = data.getJSONObject("result");
         List<Song> songList = new ArrayList<>();
         if (result.getInt("songCount") == 0)
@@ -32,8 +34,10 @@ public class DataParser {
     }
 
     public static List<Playlist> getPlaylistList(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Playlist");
+            throw new APIAccessFailureException("Failure on API access when searching for Playlist");
+        }
         JSONObject result = data.getJSONObject("result");
         List<Playlist> playlistList = new ArrayList<>();
         if (result.getInt("playlistCount") == 0)
@@ -47,8 +51,10 @@ public class DataParser {
     }
 
     public static List<Artist> getArtistList(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Artist");
+            throw new APIAccessFailureException("Failure on API access when searching for Artist");
+        }
         JSONObject result = data.getJSONObject("result");
         List<Artist> artistList = new ArrayList<>();
         if (result.getInt("artistCount") == 0)
@@ -62,8 +68,10 @@ public class DataParser {
     }
 
     public static List<Album> getAlbumList(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Album");
+            throw new APIAccessFailureException("Failure on API access when searching for Album");
+        }
         JSONObject result = data.getJSONObject("result");
         List<Album> albumList = new ArrayList<>();
         if (result.getInt("albumCount") == 0)
@@ -77,8 +85,10 @@ public class DataParser {
     }
 
     public static Album getAlbumDetail(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Album");
+            throw new APIAccessFailureException("Failure on API access when searching for Album");
+        }
         JSONObject result = data.getJSONObject("album");
         Artist artist = getArtist(result.getJSONArray("artists").getJSONObject(0));
 
@@ -93,8 +103,10 @@ public class DataParser {
     }
 
     public static Artist getArtistDetail(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Artist");
+            throw new APIAccessFailureException("Failure on API access when searching for Artist");
+        }
         JSONObject result = data.getJSONObject("artist");
 
         List<Song> songList = new ArrayList<>();
@@ -155,8 +167,10 @@ public class DataParser {
     }
 
     public static Song getSongDetail(JSONObject data) {
-        if ((int) data.get("code") != 200)
-            return null;
+        if (data.getInt("code") != 200) {
+            Center.toast("Failure on API access when searching for Song");
+            throw new APIAccessFailureException("Failure on API access when searching for Song");
+        }
         return getSong(data.getJSONArray("songs").getJSONObject(0));
     }
 

@@ -1,20 +1,20 @@
 package ui;
 
 import com.jfoenix.controls.JFXButton;
-import entity.Entity;
+import entity.DownloadableEntity;
 import javafx.scene.control.TreeTableCell;
 import util.ThreadUtils;
 
 import java.util.function.Function;
 
-public class ClickableTreeTableCell extends TreeTableCell<Entity, String> {
+public class ClickableTreeTableCell extends TreeTableCell<DownloadableEntity, String> {
 
-    private final Function<Entity, String> getIdFunction;
+    private final Function<DownloadableEntity, String> getIdFunction;
     private final StringParamEvent event;
     private boolean isButton = false;
     private String customName = "";
 
-    public ClickableTreeTableCell(Function<Entity, String> getIdFunction, StringParamEvent event) {
+    public ClickableTreeTableCell(Function<DownloadableEntity, String> getIdFunction, StringParamEvent event) {
         this.getIdFunction = getIdFunction;
         this.event = event;
     }
@@ -36,7 +36,7 @@ public class ClickableTreeTableCell extends TreeTableCell<Entity, String> {
         }
     }
 
-    public Entity getEntity() {
+    public DownloadableEntity getEntity() {
         return this.getTableColumn().getTreeTableView().getTreeItem(this.getIndex()).getValue();
     }
 

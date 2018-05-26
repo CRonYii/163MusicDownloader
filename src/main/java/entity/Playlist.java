@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Playlist extends Entity implements Serializable {
+public class Playlist extends DownloadableEntity implements Serializable {
 
     private static final long serialVersionUID = 504L;
 
@@ -37,7 +37,7 @@ public class Playlist extends Entity implements Serializable {
         this(id, name, null);
     }
 
-    public void downloadAllSongs() {
+    public void download() {
         Downloader.downloader.downloadSong(getSongList());
         Center.toast(String.format("playlist %s, all songs added to download list\n", name));
     }

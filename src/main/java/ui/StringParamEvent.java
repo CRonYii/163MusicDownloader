@@ -21,7 +21,7 @@ public interface StringParamEvent {
         public boolean run(String id) {
             try {
                 Playlist playlist = Database.getPlaylist(id);
-                playlist.downloadAllSongs();
+                playlist.download();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
                 System.err.printf("Unable to get playlist, id: %s\n", id);
@@ -50,7 +50,7 @@ public interface StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
-                Database.getAlbum(id).downloadAllSongs();
+                Database.getAlbum(id).download();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
                 System.err.printf("Unable to download album, id: %s\n", id);
@@ -64,7 +64,7 @@ public interface StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
-                Database.getArtist(id).downloadAllSongs();
+                Database.getArtist(id).download();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download artist's songs, id: %s\n", id));
                 System.err.printf("Unable to download artist's songs, id: %s\n", id);

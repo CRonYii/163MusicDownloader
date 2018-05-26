@@ -3,7 +3,7 @@ package ui;
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableView;
-import entity.Entity;
+import entity.DownloadableEntity;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -79,7 +79,7 @@ public class Center {
 
     private static JFXSnackbar toast;
     private static Scene rootScene;
-    private static JFXTreeTableView<Entity> searchView;
+    private static JFXTreeTableView<DownloadableEntity> searchView;
     private static Label searchListLabel;
 
     public static void setLabel(Label statusLabel) {
@@ -129,7 +129,7 @@ public class Center {
         Center.rootScene = rootScene;
     }
 
-    public static void setSearchList(List<Entity> searchList) {
+    public static void setSearchList(List<DownloadableEntity> searchList) {
         TabViewController.instance.setSearchList(searchList);
     }
 
