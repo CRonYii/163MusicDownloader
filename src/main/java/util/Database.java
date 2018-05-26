@@ -100,7 +100,7 @@ public class Database implements Serializable {
     }
 
     public static void addSongDownloadURL(String id, String url) {
-        database.songDownloadMap.putIfAbsent(id, url);
+        database.songDownloadMap.put(id, url);
     }
 
     public static boolean hasSongDownloadURL(String id) {
@@ -116,14 +116,14 @@ public class Database implements Serializable {
     }
 
     public static void addSong(Song song) {
-        database.songMap.putIfAbsent(song.getId(), song);
+        database.songMap.put(song.getId(), song);
     }
 
     public static boolean hasSong(String id) {
         return database.songMap.containsKey(id);
     }
 
-    public static Artist getArtist(String id) throws IOException, ElementNotFoundException {
+    public static Artist getArtist(String id) throws IOException {
         if (hasArtist(id))
             return database.artistMap.get(id);
         Artist artist = Spider.getArtistByID(id);
@@ -132,14 +132,14 @@ public class Database implements Serializable {
     }
 
     public static void addArtist(Artist artist) {
-        database.artistMap.putIfAbsent(artist.getId(), artist);
+        database.artistMap.put(artist.getId(), artist);
     }
 
     public static boolean hasArtist(String id) {
         return database.artistMap.containsKey(id);
     }
 
-    public static Album getAlbum(String id) throws IOException, ElementNotFoundException {
+    public static Album getAlbum(String id) throws IOException {
         if (hasAlbum(id))
             return database.albumMap.get(id);
         Album album = Spider.getAlbumByID(id);
@@ -148,7 +148,7 @@ public class Database implements Serializable {
     }
 
     public static void addAlbum(Album album) {
-        database.albumMap.putIfAbsent(album.getId(), album);
+        database.albumMap.put(album.getId(), album);
     }
 
     public static boolean hasAlbum(String id) {
@@ -165,7 +165,7 @@ public class Database implements Serializable {
     }
 
     public static void addPlaylist(Playlist playlist) {
-        database.playlistMap.putIfAbsent(playlist.getId(), playlist);
+        database.playlistMap.put(playlist.getId(), playlist);
     }
 
     public static boolean hasPlaylist(String id) {

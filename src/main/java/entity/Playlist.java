@@ -1,6 +1,7 @@
 package entity;
 
 import ui.Center;
+import util.Database;
 import util.Downloader;
 import util.Spider;
 
@@ -40,9 +41,10 @@ public class Playlist implements Serializable {
     }
 
     public List<Song> getSongList() {
-        if (songList == null) {
+        if (songList == null || songList.isEmpty()) {
             try {
                 fetchSongList();
+                Database.addPlaylist(this);
             } catch (IOException e) {
                 Center.toast(String.format("Failed to get Playlist %s's songs", name));
                 e.printStackTrace();

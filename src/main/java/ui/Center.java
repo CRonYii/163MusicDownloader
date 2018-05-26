@@ -113,7 +113,7 @@ public class Center {
     public static JFXTextField setUpTextField(String tag) {
         JFXTextField textField = new JFXTextField();
         textField.setValidators(new NonNullValidator("Keyword cannot be empty"));
-        textField.setPromptText("Enter " + tag.substring(0, 1).toUpperCase() + tag.substring(1));
+        textField.setPromptText("Enter " + tag.substring(0, 1).toUpperCase() + tag.substring(1) + "Name");
         textField.setLabelFloat(true);
         return textField;
     }

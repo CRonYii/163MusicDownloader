@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
+import entity.Artist;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,7 +31,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static util.Spider.searchAlbum;
+import static util.Spider.getArtistByID;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
 public class OptionPopupController implements Initializable {
@@ -159,7 +160,8 @@ public class OptionPopupController implements Initializable {
     public void debug() {
         ThreadUtils.startThread(() -> {
             try {
-                System.out.println(searchAlbum("高桥优", 0));
+                Artist artist = getArtistByID("6452");
+                System.out.println(artist.getSongList());
             } catch (IOException e) {
                 e.printStackTrace();
             }

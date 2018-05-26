@@ -5,7 +5,6 @@ import entity.Artist;
 import entity.Playlist;
 import entity.Song;
 import util.Database;
-import util.ElementNotFoundException;
 import util.Spider;
 
 import java.io.IOException;
@@ -56,10 +55,6 @@ public interface StringParamEvent {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
                 System.err.printf("Unable to download album, id: %s\n", id);
                 return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get album, id: %s\n", id));
-                e.printStackTrace();
-                return false;
             }
             return true;
         }
@@ -69,14 +64,10 @@ public interface StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
-                Database.getArtist(id).downloadAllAlbum();
+                Database.getArtist(id).downloadAllSongs();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download artist's songs, id: %s\n", id));
                 System.err.printf("Unable to download artist's songs, id: %s\n", id);
-                return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get artist's songs, id: %s\n", id));
-                e.printStackTrace();
                 return false;
             }
             return true;
@@ -142,10 +133,6 @@ public interface StringParamEvent {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
                 System.err.printf("Unable to download album, id: %s\n", id);
                 return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get album, id: %s\n", id));
-                e.printStackTrace();
-                return false;
             }
             return true;
         }
@@ -156,18 +143,11 @@ public interface StringParamEvent {
         public boolean run(String id) {
             try {
                 Center.toast("Searching Artist id: " + id);
-                List<Album> albumList = Database.getArtist(id).getAlbumList();
-                List<Song> songList = new ArrayList<>();
-                for (Album a : albumList)
-                    songList.addAll(a.getSongList());
-                Center.setSearchList(songList);
+                System.out.println(Database.getArtist(id).getAlbumList().get(0).getSongList());
+                Center.setSearchList(Database.getArtist(id).getSongList());
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download artist's songs, id: %s\n", id));
                 System.err.printf("Unable to download artist's songs, id: %s\n", id);
-                return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get artist's songs, id: %s\n", id));
-                e.printStackTrace();
                 return false;
             }
             return true;

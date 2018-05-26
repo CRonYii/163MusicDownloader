@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: instead of returning Null, throw an exception or toast an error message
 public class DataParser {
 
     public static List<Song> getSongList(JSONObject data) {
@@ -36,7 +37,6 @@ public class DataParser {
         List<Playlist> playlistList = new ArrayList<>();
         for (int i = 0; i < playlists.size(); i++) {
             JSONObject playlist = playlists.getJSONObject(i);
-//            playlistList.add(Spider.getPlaylistByID(playlist.getString("id")));
             playlistList.add(new Playlist(playlist.getString("id"), playlist.getString("name")));
         }
         return playlistList;
@@ -66,6 +66,46 @@ public class DataParser {
             albumList.add(getAlbum(album, getArtist(album.getJSONObject("artist"))));
         }
         return albumList;
+    }
+
+    public static Album getAlbumDetail(JSONObject data) {
+        if ((int) data.get("code") != 200)
+            return null;
+        JSONObject result = data.getJSONObject("album");
+        Artist artist = getArtist(result.getJSONArray("artists").getJSONObject(0));
+
+        List<Song> songList = new ArrayList<>();
+        Album album = new Album(artist, result.getString("name"), result.getString("id"), songList);
+        JSONArray songs = data.getJSONArray("songs");
+        for (int i = 0; i < songs.size(); i++) {
+            JSONObject song = songs.getJSONObject(i);
+            songList.add(new Song(song.getString("id"), song.getString("name"), artist, album));
+        }
+        return album;
+    }
+
+    public static Artist getArtistDetail(JSONObject data) {
+        if ((int) data.get("code") != 200)
+            return null;
+        JSONObject result = data.getJSONObject("artist");
+
+        List<Song> songList = new ArrayList<>();
+        Artist artist = new Artist(result.getString("name"), result.getString("id"), new ArrayList<>(), songList);
+        JSONArray songs = data.getJSONArray("hotSongs");
+        for (int i = 0; i < songs.size(); i++) {
+            JSONObject song = songs.getJSONObject(i);
+            JSONObject albumJson = song.getJSONObject("al");
+            String albumId = albumJson.getString("id");
+            String albumName = albumJson.getString("name");
+            Album album = null;
+            try {
+                album = Database.hasAlbum(albumId) ? Database.getAlbum(albumId) : new Album(artist, albumName, albumId);
+            } catch (IOException e) {
+                // unreachable exception, leave it like this
+            }
+            songList.add(new Song(song.getString("id"), song.getString("name"), artist, album));
+        }
+        return artist;
     }
 
     public static Playlist getPlaylist(JSONObject data) {

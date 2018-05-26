@@ -220,6 +220,9 @@ public class TabViewController implements Initializable {
 
     private void updateTextField(JFXTextField field) {
         field.setOnAction(event -> search());
+        if (searchTextField != null)
+            field.setText(searchTextField.getText());
+        field.validate();
         searchBox.getChildren().remove(searchTextField);
         searchTextField = field;
         searchBox.getChildren().add(0, searchTextField);

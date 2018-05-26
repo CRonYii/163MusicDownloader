@@ -1,13 +1,12 @@
 package entity;
 
 import ui.Center;
+import util.Database;
 import util.Downloader;
-import util.ElementNotFoundException;
 import util.Spider;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Album implements Serializable {
@@ -20,7 +19,7 @@ public class Album implements Serializable {
     private List<Song> songList;
 
     public Album(Artist artist, String name, String id) {
-        this(artist, name, id, new ArrayList<>());
+        this(artist, name, id, null);
     }
 
     public Album(Artist artist, String name, String id, List<Song> songList) {
@@ -50,10 +49,11 @@ public class Album implements Serializable {
     }
 
     public List<Song> getSongList() {
-        if (songList == null) {
+        if (songList == null || songList.isEmpty()) {
             try {
                 fetchSongList();
-            } catch (IOException | ElementNotFoundException e) {
+                Database.addAlbum(this);
+            } catch (IOException e) {
                 Center.toast(String.format("Failed to get Playlist %s's songs", name));
                 e.printStackTrace();
             }
@@ -61,7 +61,7 @@ public class Album implements Serializable {
         return songList;
     }
 
-    private void fetchSongList() throws IOException, ElementNotFoundException {
+    private void fetchSongList() throws IOException {
         songList = Spider.getAlbumByID(id).songList;
     }
 
