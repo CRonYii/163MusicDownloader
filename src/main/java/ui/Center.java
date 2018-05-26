@@ -1,18 +1,16 @@
 package ui;
 
-import com.jfoenix.controls.*;
-import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTreeTableView;
 import entity.Entity;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TreeTableColumn;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import ui.fxml.TabViewController;
 import util.Database;
 import util.Downloader;
 
@@ -25,7 +23,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -132,51 +129,12 @@ public class Center {
         Center.rootScene = rootScene;
     }
 
-    public static void setSearchView(JFXTreeTableView<Entity> searchView) {
-        Center.searchView = searchView;
-    }
-
     public static void setSearchList(List<Entity> searchList) {
-        if (searchList.isEmpty()) {
-            Center.toast(String.format("Found 0 results on Search"), TOAST_LONG);
-            return;
-        }
-        Platform.runLater(() -> {
-            ObservableList<Entity> dataList = FXCollections.observableArrayList(searchList);
-            searchListLabel.setText(String.format("Found %s results", searchList.size()));
-
-            searchView.getColumns().clear();
-            Entity entity = searchList.get(0);
-            List<String> columns = entity.getColumns();
-            double width = Main.WIDTH / columns.size();
-            columns.forEach(columnName -> {
-                JFXTreeTableColumn<Entity, String> column = new JFXTreeTableColumn<>(columnName);
-                column.setPrefWidth(width);
-                setUpCellValueFactory(column, (Entity e) -> e.getPropertyMap().get(columnName));
-                if (entity.getColumnFactoryMap().containsKey(columnName) && entity.getColumnFactoryMap().get(columnName) != null)
-                    column.setCellFactory(entity.getColumnFactoryMap().get(columnName));
-                searchView.getColumns().add(column);
-            });
-            searchView.setRoot(new RecursiveTreeItem<>(dataList, RecursiveTreeObject::getChildren));
-        });
-    }
-
-    private static void setUpCellValueFactory(JFXTreeTableColumn<Entity, String> column, Function<Entity, StringProperty> mapper) {
-        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Entity, String> param) -> {
-            if (column.validateValue(param)) {
-                return mapper.apply(param.getValue().getValue());
-            } else {
-                return column.getComputedValue(param);
-            }
-        });
+        TabViewController.instance.setSearchList(searchList);
     }
 
     public static void addCloseEvent(Runnable runnable) {
         closeEventList.add(runnable);
-    }
-
-    public static void setSearchListLabel(Label searchListLabel) {
-        Center.searchListLabel = searchListLabel;
     }
 
     public static void setNewSongDir(File newSongDir) {

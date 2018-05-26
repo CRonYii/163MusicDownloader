@@ -1,12 +1,13 @@
 package ui.fxml;
 
 import com.jfoenix.controls.*;
+import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import entity.Entity;
-import entity.Song;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +19,7 @@ import util.Downloader;
 import util.ThreadUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -40,14 +42,6 @@ public class TabViewController {
     private JFXListView<Downloader.Download> listView;
     @FXML
     private JFXTreeTableView<Entity> searchView;
-    /*    @FXML
-        private JFXTreeTableColumn<Song, String> titleColumn;
-        @FXML
-        private JFXTreeTableColumn<Song, String> artistColumn;
-        @FXML
-        private JFXTreeTableColumn<Song, String> albumColumn;
-        @FXML
-        private JFXTreeTableColumn<Song, String> actionColumn;*/
     @FXML
     private JFXProgressBar searchProgress;
     @FXML
@@ -61,9 +55,13 @@ public class TabViewController {
     @FXML
     private JFXButton downloadSelectedButton;
 
+    public static TabViewController instance;
+
     @FXML
     @PostConstruct
     public void initialize() {
+        instance = this;
+
         setUpRdToggle();
         initSearchView();
 
@@ -142,13 +140,35 @@ public class TabViewController {
                 () -> searchView.getSelectionModel().getSelectedCells().size() + " result(s) selected",
                 searchView.getSelectionModel().getSelectedItems())
         );
-
-        Center.setSearchView(searchView);
-        Center.setSearchListLabel(searchListLabel);
     }
 
-    private <T> void setupCellValueFactory(JFXTreeTableColumn<Song, T> column, Function<Song, ObservableValue<T>> mapper) {
-        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Song, T> param) -> {
+    public void setSearchList(List<Entity> searchList) {
+        if (searchList.isEmpty()) {
+            Center.toast(String.format("Found 0 results on Search"), TOAST_LONG);
+            return;
+        }
+        Platform.runLater(() -> {
+            ObservableList<Entity> dataList = FXCollections.observableArrayList(searchList);
+            searchListLabel.setText(String.format("Found %s results", searchList.size()));
+
+            searchView.getColumns().clear();
+            Entity entity = searchList.get(0);
+            List<String> columns = entity.getColumns();
+            double width = Main.WIDTH / columns.size();
+            columns.forEach(columnName -> {
+                JFXTreeTableColumn<Entity, String> column = new JFXTreeTableColumn<>(columnName);
+                column.setPrefWidth(width);
+                setUpCellValueFactory(column, (Entity e) -> e.getPropertyMap().get(columnName));
+                if (entity.getColumnFactoryMap().containsKey(columnName) && entity.getColumnFactoryMap().get(columnName) != null)
+                    column.setCellFactory(entity.getColumnFactoryMap().get(columnName));
+                searchView.getColumns().add(column);
+            });
+            searchView.setRoot(new RecursiveTreeItem<>(dataList, RecursiveTreeObject::getChildren));
+        });
+    }
+
+    private void setUpCellValueFactory(JFXTreeTableColumn<Entity, String> column, Function<Entity, StringProperty> mapper) {
+        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Entity, String> param) -> {
             if (column.validateValue(param)) {
                 return mapper.apply(param.getValue().getValue());
             } else {
