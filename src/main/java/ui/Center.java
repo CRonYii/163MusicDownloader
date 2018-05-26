@@ -52,7 +52,8 @@ public class Center {
         if (newSongDir != null) {
             for (File file : Database.database.getSongDir().listFiles()) {
                 try {
-                    Files.move(file.toPath(), Paths.get(newSongDir.getAbsolutePath() + "\\" + file.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    if (file.getName().contains(".mp3"))
+                        Files.move(file.toPath(), Paths.get(newSongDir.getAbsolutePath() + "\\" + file.getName()), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
