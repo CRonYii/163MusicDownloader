@@ -8,10 +8,8 @@ import net.sf.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -145,32 +143,6 @@ public class Spider {
         return DataParser.getArtistDetail(data);
     }
 
-    public static void setArtistAndAlbum(Song song) throws ElementNotFoundException {
-        if (song.getArtist() != null && song.getAlbum() != null)
-            return;
-        System.err.println("Somebody is freakingly asking for artist / album");
-        try {
-            Element body = get163Connection(SONG_URL)
-                    .data("id", song.getId())
-                    .get().body();
-
-            Element info = body.selectFirst("div[class=cnt]");
-            if (info == null)
-                throw new ElementNotFoundException("Unable to get song : " + song);
-            Elements eleInfo = info.select("a[class=s-fc7]");
-            if (eleInfo.size() < 2)
-                return;
-            Element eleArtist = eleInfo.get(0);
-            Artist artist = new Artist(eleArtist.text(), eleArtist.attr("href").substring(11));
-            Element eleAlbum = eleInfo.get(1);
-            Album album = new Album(artist, eleAlbum.text(), eleAlbum.attr("href").substring(10));
-            song.setArtist(artist);
-            song.setAlbum(album);
-        } catch (IOException e) {
-            System.err.printf("Cannot get Artist and Album from song, id: %s\n", song.getId());
-        }
-    }
-
     public static List<Song> searchSong(String keyword, int offset) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("s", keyword);
@@ -245,23 +217,6 @@ public class Spider {
 
         JSONObject data = JSONObject.fromObject(response.body());
         return DataParser.getAlbumList(data);
-    }
-
-    public static List<Song> getSongListFromMusicFM(String url) throws IOException {
-        Element body = Jsoup.connect(url)
-                .get()
-                .body();
-        Elements songEleList = body.selectFirst("div[class=list]").select("a[class=jstracker]");
-        List<Song> songList = new ArrayList<>();
-        for (Element songEle : songEleList) {
-            String title = songEle.selectFirst("h3").text();
-            String artist = songEle.selectFirst("p").text();
-            if (title.contains(artist))
-                title = title.substring(artist.length() + 3);
-            Song song = searchSong(title + " " + artist, 0).get(0);
-            songList.add(song);
-        }
-        return songList;
     }
 
 }

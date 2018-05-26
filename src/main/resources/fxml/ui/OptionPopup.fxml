@@ -14,5 +14,4 @@
     <JFXButton fx:id="aboutButton" text="About" onAction="#about" prefWidth="Infinity"/>
     <Separator/>
     <JFXButton fx:id="exitButton" text="Exit" onAction="#exit" prefWidth="Infinity"/>
-    <JFXButton text="Debug" onAction="#debug" prefWidth="Infinity"/>
 </VBox>

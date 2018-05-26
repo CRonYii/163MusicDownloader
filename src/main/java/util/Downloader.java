@@ -77,7 +77,6 @@ public class Downloader {
      * @param dir  the directory to save the file
      */
     public void downloadSong(Song song, File dir) {
-        song.setArtistAndAlbum();
         if (song.exists()) {
             Center.printToStatus("Song: " + song.getName() + ", already downloaded");
             return;

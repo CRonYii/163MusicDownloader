@@ -25,7 +25,8 @@ import java.util.function.Function;
 
 import static ui.Center.*;
 
-// TODO: 1. Make Entity Type Generic 2. Put the search View into separate class 3. Support All Entity Type display in searchView 4. implement Paging 5. Possibly Forward / Backward Navigation
+// TODO: implement Paging / lazy loading
+// TODO: Possibly Forward / Backward Navigation
 public class TabViewController {
 
     private RadioButtonGroup searchTypeButtonGroup;

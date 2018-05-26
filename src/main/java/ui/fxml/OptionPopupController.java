@@ -4,7 +4,6 @@ import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
-import entity.Artist;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,7 +18,6 @@ import ui.Center;
 import ui.DirectoryValidator;
 import ui.PositiveNumberValidator;
 import util.Database;
-import util.ThreadUtils;
 
 import javax.annotation.PostConstruct;
 import java.awt.*;
@@ -27,8 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import static util.Spider.getArtistByID;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
 public class OptionPopupController {
@@ -152,17 +148,6 @@ public class OptionPopupController {
     public void exit() {
         Center.CLOSE_EVENT.handle(new WindowEvent(Center.getRootWindow(), WindowEvent.WINDOW_CLOSE_REQUEST));
         Platform.exit();
-    }
-
-    public void debug() {
-        ThreadUtils.startThread(() -> {
-            try {
-                Artist artist = getArtistByID("6452");
-                System.out.println(artist.getSongList());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     private void makeSettingInput(JFXTextField textField, String label, String promptText) {

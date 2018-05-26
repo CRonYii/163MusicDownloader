@@ -74,20 +74,6 @@ public interface StringParamEvent {
         }
     }
 
-    class FetchMusicFMEvent implements StringParamEvent {
-        @Override
-        public boolean run(String url) {
-            try {
-                List<Song> songList = Spider.getSongListFromMusicFM(url);
-                Center.setSearchList(new ArrayList<>(songList));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
-        }
-    }
-
     class IdPlaylistSearchEvent implements StringParamEvent {
 
         @Override
@@ -176,7 +162,7 @@ public interface StringParamEvent {
             try {
                 Center.toast("Searching Playlist: " + keyword);
                 List<Playlist> playList = Spider.searchPlaylist(keyword, 0);
-                System.out.println(playList);
+                Center.setSearchList(new ArrayList<>(playList));
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -191,7 +177,7 @@ public interface StringParamEvent {
             try {
                 Center.toast("Searching Artist: " + keyword);
                 List<Artist> artistList = Spider.searchArtist(keyword, 0);
-                System.out.println(artistList);
+                Center.setSearchList(new ArrayList<>(artistList));
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -206,7 +192,7 @@ public interface StringParamEvent {
             try {
                 Center.toast("Searching Album: " + keyword);
                 List<Album> albumList = Spider.searchAlbum(keyword, 0);
-                System.out.println(albumList);
+                Center.setSearchList(new ArrayList<>(albumList));
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

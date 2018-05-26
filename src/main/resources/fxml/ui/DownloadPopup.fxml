@@ -15,7 +15,5 @@
     <JFXButton text="Album" onAction="#downloadAlbum" prefWidth="Infinity"/>
     <JFXButton text="All Songs of an Artist" onAction="#downloadArtist" prefWidth="Infinity"/>
     <Separator/>
-    <JFXButton text="From Music FM" onAction="#downloadFromMusicFM" prefWidth="Infinity"/>
-    <Separator/>
     <JFXButton text="Open Songs Folder" onAction="#openSongsFolder" prefWidth="Infinity"/>
 </VBox>

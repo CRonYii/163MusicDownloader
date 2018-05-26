@@ -20,8 +20,10 @@ public class DataParser {
         if ((int) data.get("code") != 200)
             return null;
         JSONObject result = data.getJSONObject("result");
-        JSONArray songs = result.getJSONArray("songs");
         List<Song> songList = new ArrayList<>();
+        if (result.getInt("songCount") == 0)
+            return songList;
+        JSONArray songs = result.getJSONArray("songs");
         for (int i = 0; i < songs.size(); i++) {
             JSONObject song = songs.getJSONObject(i);
             songList.add(getSong(song));
@@ -33,8 +35,10 @@ public class DataParser {
         if ((int) data.get("code") != 200)
             return null;
         JSONObject result = data.getJSONObject("result");
-        JSONArray playlists = result.getJSONArray("playlists");
         List<Playlist> playlistList = new ArrayList<>();
+        if (result.getInt("playlistCount") == 0)
+            return playlistList;
+        JSONArray playlists = result.getJSONArray("playlists");
         for (int i = 0; i < playlists.size(); i++) {
             JSONObject playlist = playlists.getJSONObject(i);
             playlistList.add(new Playlist(playlist.getString("id"), playlist.getString("name")));
@@ -46,8 +50,10 @@ public class DataParser {
         if ((int) data.get("code") != 200)
             return null;
         JSONObject result = data.getJSONObject("result");
-        JSONArray artists = result.getJSONArray("artists");
         List<Artist> artistList = new ArrayList<>();
+        if (result.getInt("artistCount") == 0)
+            return artistList;
+        JSONArray artists = result.getJSONArray("artists");
         for (int i = 0; i < artists.size(); i++) {
             JSONObject artist = artists.getJSONObject(i);
             artistList.add(getArtist(artist));
@@ -59,8 +65,10 @@ public class DataParser {
         if ((int) data.get("code") != 200)
             return null;
         JSONObject result = data.getJSONObject("result");
-        JSONArray albums = result.getJSONArray("albums");
         List<Album> albumList = new ArrayList<>();
+        if (result.getInt("albumCount") == 0)
+            return albumList;
+        JSONArray albums = result.getJSONArray("albums");
         for (int i = 0; i < albums.size(); i++) {
             JSONObject album = albums.getJSONObject(i);
             albumList.add(getAlbum(album, getArtist(album.getJSONObject("artist"))));

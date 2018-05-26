@@ -1,10 +1,9 @@
 package entity;
 
-import com.jfoenix.controls.JFXButton;
-import javafx.scene.control.TreeTableCell;
-import ui.ReadStringTask;
+import ui.ClickableTreeTableCell;
 import ui.StringParamEvent;
-import util.*;
+import util.Database;
+import util.Downloader;
 
 import java.io.File;
 import java.io.Serializable;
@@ -16,27 +15,12 @@ public class Song extends Entity implements Serializable {
 
     private static final long serialVersionUID = 501L;
 
-    private static final List<String> columns = new ArrayList<>(Arrays.asList("Name", "Artist", "Album", "Action"));
+    private static final List<String> columns = new ArrayList<>(Arrays.asList("Song Name", "Artist", "Album", "Action"));
     private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
-            constProp("name"),
-            constProp("artist", "getArtistName"),
-            constProp("album", "getAlbumName"),
-            constProp("id").setCell(param -> new TreeTableCell<Entity, String>() {
-                @Override
-                protected void updateItem(String id, boolean empty) {
-                    if (!empty) {
-                        Song song = (Song) this.getTableColumn().getTreeTableView().getTreeItem(this.getIndex()).getValue();
-                        JFXButton button = new JFXButton("Download");
-                        button.setStyle("-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;");
-                        button.setButtonType(JFXButton.ButtonType.RAISED);
-                        button.setOnAction(event -> ThreadUtils.startThread(new ReadStringTask(id, new StringParamEvent.SongDownloadEvent())));
-                        setGraphic(button);
-                        setText("");
-                    } else {
-                        setGraphic(null);
-                    }
-                }
-            })
+            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getName(), new StringParamEvent.KeywordSongSearchEvent())),
+            constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getArtist().getId(), new StringParamEvent.IdArtistSearchEvent())),
+            constProp("album", "getAlbumName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getAlbum().getId(), new StringParamEvent.IdAlbumSearchEvent())),
+            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getId(), new StringParamEvent.SongDownloadEvent()).setIsButton(true).setCustomName("Download"))
     ));
 
     private final String name;
@@ -64,16 +48,6 @@ public class Song extends Entity implements Serializable {
 
     public void download() {
         download(Downloader.TEMP_DIR);
-    }
-
-    public void setArtistAndAlbum() {
-        if (artist != null && album != null)
-            return;
-        try {
-            Spider.setArtistAndAlbum(this);
-        } catch (ElementNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public String getId() {

@@ -50,11 +50,6 @@ public class DownloadPopupController {
         }
     }
 
-    @FXML
-    public void downloadFromMusicFM() {
-        promptEnterURLDialog(new StringParamEvent.FetchMusicFMEvent(), "the most similar songs of playlist will be downloaded");
-    }
-
     private void promptEnterIDDialog(StringParamEvent task, String tag, String promptMsg) {
         JFXAlert alert = new JFXAlert((Stage) Center.getRootWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
