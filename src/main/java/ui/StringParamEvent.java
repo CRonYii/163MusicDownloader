@@ -36,7 +36,7 @@ public interface StringParamEvent {
         @Override
         public boolean run(String id) {
             try {
-                Center.toast("Start Downloading Song " + Database.getSong(id).getTitle());
+                Center.toast("Start Downloading Song " + Database.getSong(id).getName());
                 Database.getSong(id).download();
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download song, id: %s\n", id));

@@ -16,7 +16,7 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     private static final long serialVersionUID = 501L;
 
     private final String id;
-    private final String title;
+    private final String name;
     private Artist artist;
     private Album album;
 
@@ -27,20 +27,18 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
 
     public Song(String id, String title, Artist artist, Album album) {
         this.id = id;
-        this.title = Downloader.makeStringValidForWindowsFile(title);
+        this.name = Downloader.makeStringValidForWindowsFile(title);
         setArtist(artist);
         setAlbum(album);
 
-        this.titleProperty = new SimpleStringProperty(this.title);
+        this.titleProperty = new SimpleStringProperty(this.name);
         this.IDProperty = new SimpleStringProperty(this.id);
 
-        if (album != null)
-            album.addSong(this);
         Database.addSong(this);
     }
 
-    public Song(String id, String title) {
-        this(id, title, null, null);
+    public Song(String id, String name) {
+        this(id, name, null, null);
     }
 
     /**
@@ -80,7 +78,7 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
 
     private void setTitleProperty() {
         if (titleProperty == null)
-            this.titleProperty = new SimpleStringProperty(title);
+            this.titleProperty = new SimpleStringProperty(name);
     }
 
     private void setArtistProperty() {
@@ -97,8 +95,8 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
     public String getTitleProperty() {
@@ -140,7 +138,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         if (album == null)
             return;
         this.album = album;
-        album.addSong(this);
         this.albumName = new SimpleStringProperty(this.album.getName());
     }
 
@@ -152,7 +149,7 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     public String toString() {
         return "Song{" +
                 "id='" + id + '\'' +
-                ", title='" + title + '\'' +
+                ", name='" + name + '\'' +
                 ", artist=" + (artist != null ? artist.getName() : "null") +
                 ", album=" + (album != null ? album.getName() : "null") +
                 '}';

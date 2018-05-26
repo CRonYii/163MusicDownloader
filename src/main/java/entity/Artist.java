@@ -12,10 +12,6 @@ public class Artist implements Serializable {
     private final String id;
     private final List<Album> albumList;
 
-    public Artist(String name) {
-        this(name, null, new ArrayList<>());
-    }
-    
     public Artist(String name, String id) {
         this(name, id, new ArrayList<>());
     }

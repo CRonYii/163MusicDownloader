@@ -2,7 +2,10 @@ package entity;
 
 import ui.Center;
 import util.Downloader;
+import util.ElementNotFoundException;
+import util.Spider;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +17,7 @@ public class Album implements Serializable {
     private final Artist artist;
     private final String name;
     private final String id;
-    private final List<Song> songList;
+    private List<Song> songList;
 
     public Album(Artist artist, String name, String id) {
         this(artist, name, id, new ArrayList<>());
@@ -29,12 +32,8 @@ public class Album implements Serializable {
         artist.addAlbum(this);
     }
 
-    public void addSong(Song song) {
-        songList.add(song);
-    }
-
     public void downloadAllSongs() {
-        Downloader.downloader.downloadSong(songList);
+        Downloader.downloader.downloadSong(getSongList());
         Center.printToStatus(String.format("playlist id: %s, all songs added to download list\n", id));
     }
 
@@ -51,7 +50,23 @@ public class Album implements Serializable {
     }
 
     public List<Song> getSongList() {
+        if (songList == null) {
+            try {
+                fetchSongList();
+            } catch (IOException | ElementNotFoundException e) {
+                Center.toast(String.format("Failed to get Playlist %s's songs", name));
+                e.printStackTrace();
+            }
+        }
         return songList;
+    }
+
+    private void fetchSongList() throws IOException, ElementNotFoundException {
+        songList = Spider.getAlbumByID(id).songList;
+    }
+
+    public int size() {
+        return getSongList().size();
     }
 
     @Override
@@ -60,7 +75,6 @@ public class Album implements Serializable {
                 "artist=" + artist.getName() +
                 ", name='" + name + '\'' +
                 ", id='" + id + '\'' +
-                ", songList=" + songList +
                 '}';
     }
 }

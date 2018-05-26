@@ -151,7 +151,7 @@ public class TabViewController implements Initializable {
                 searchView.setPredicate(songProp -> {
                     final Song song = songProp.getValue();
                     String filter = newValue.toLowerCase();
-                    return song.getTitle().toLowerCase().contains(filter)
+                    return song.getName().toLowerCase().contains(filter)
                             || (song.getArtist() != null && song.getArtist().getName().toLowerCase().contains(filter))
                             || (song.getAlbum() != null && song.getAlbum().getName().toLowerCase().contains(filter));
                 }));

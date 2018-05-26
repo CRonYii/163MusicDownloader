@@ -13,30 +13,30 @@ public class Playlist implements Serializable {
     private static final long serialVersionUID = 504L;
 
     private final String id;
-    private final String title;
+    private final String name;
     private List<Song> songList;
 
-    public Playlist(String id, String title, List<Song> songList) {
+    public Playlist(String id, String name, List<Song> songList) {
         this.id = id;
-        this.title = title;
+        this.name = name;
         this.songList = songList;
     }
 
-    public Playlist(String id, String title) {
-        this(id, title, null);
+    public Playlist(String id, String name) {
+        this(id, name, null);
     }
 
     public void downloadAllSongs() {
         Downloader.downloader.downloadSong(getSongList());
-        Center.toast(String.format("playlist %s, all songs added to download list\n", title));
+        Center.toast(String.format("playlist %s, all songs added to download list\n", name));
     }
 
     public String getId() {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
     public List<Song> getSongList() {
@@ -44,7 +44,7 @@ public class Playlist implements Serializable {
             try {
                 fetchSongList();
             } catch (IOException e) {
-                Center.toast(String.format("Failed to get Playlist %s's songs", title));
+                Center.toast(String.format("Failed to get Playlist %s's songs", name));
                 e.printStackTrace();
             }
         }
@@ -63,7 +63,7 @@ public class Playlist implements Serializable {
     public String toString() {
         return "Playlist{" +
                 "id='" + id + '\'' +
-                ", title='" + title + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
