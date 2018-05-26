@@ -32,6 +32,14 @@ import java.util.regex.Pattern;
 
 public class Center {
 
+
+    public static final String PLAYLIST = "playlist";
+    public static final String SONG = "song";
+    public static final String ALBUM = "album";
+    public static final String ARTIST = "artist";
+    public static final String ID = "id";
+    public static final String KEYWORD = "keyword";
+
     public static long TOAST_FAST = 1000;
 
     private static Label statusLabel;
@@ -77,7 +85,8 @@ public class Center {
         Center.statusLabel = statusLabel;
     }
 
-    public static void setUpIdValidationTextField(String tag, JFXTextField textField) {
+    public static JFXTextField setUpIdValidationTextField(String tag) {
+        JFXTextField textField = new JFXTextField();
         textField.setValidators(new PositiveNumberValidator("id must be a number"));
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             // use regex to fetch song id from url if necessary
@@ -93,7 +102,13 @@ public class Center {
 
             textField.validate();
         });
-        textField.setPromptText(tag.substring(0, 1).toUpperCase() + tag.substring(1) + " ID");
+        textField.setPromptText("Enter " + tag.substring(0, 1).toUpperCase() + tag.substring(1) + " ID");
+        textField.setLabelFloat(true);
+        return textField;
+    }
+
+    public static void setUpTextField(String tag, JFXTextField textField) {
+        textField.setPromptText("Enter " + tag.substring(0, 1).toUpperCase() + tag.substring(1));
         textField.setLabelFloat(true);
     }
 

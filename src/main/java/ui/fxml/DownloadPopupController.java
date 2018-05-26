@@ -64,8 +64,7 @@ public class DownloadPopupController {
         layout.setHeading(new javafx.scene.control.Label("Enter an id number"));
 
         Label promptLabel = new Label(promptMsg);
-        JFXTextField textField = new JFXTextField();
-        Center.setUpIdValidationTextField(tag, textField);
+        JFXTextField textField = Center.setUpIdValidationTextField(tag);
         VBox body = new VBox(promptLabel, textField);
         body.setSpacing(20.0);
 

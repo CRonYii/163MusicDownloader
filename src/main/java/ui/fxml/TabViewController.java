@@ -7,8 +7,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import ui.*;
 import util.Downloader;
 import util.ThreadUtils;
@@ -17,9 +19,18 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+import static ui.Center.*;
+
 public class TabViewController implements Initializable {
 
-    private final ToggleGroup selectToggle = new ToggleGroup();
+    private RadioButtonGroup resultTypeButtonGroup;
+
+    private JFXTextField searchTextField;
+
+    @FXML
+    private VBox searchVBox;
+    @FXML
+    private HBox searchBox;
     @FXML
     private JFXListView<Downloader.Download> listView;
     @FXML
@@ -34,10 +45,6 @@ public class TabViewController implements Initializable {
     private JFXTreeTableColumn<Song, String> actionColumn;
     @FXML
     private JFXProgressBar searchProgress;
-    @FXML
-    private HBox selectType;
-    @FXML
-    private JFXTextField searchTextField;
     @FXML
     private JFXTextField searchFilterField;
     @FXML
@@ -69,34 +76,31 @@ public class TabViewController implements Initializable {
 
 
     private void setUpRdToggle() {
-        setUpRadioButton(new StringParamEvent.IdPlaylistSearchEvent(), "playlist");
-        setUpRadioButton(new StringParamEvent.IdArtistSearchEvent(), "artist");
-        setUpRadioButton(new StringParamEvent.IdAlbumSearchEvent(), "album");
-        setUpRadioButton(new StringParamEvent.IdSongSearchEvent(), "song");
+        resultTypeButtonGroup = new RadioButtonGroup(10.0);
+        resultTypeButtonGroup.setPadding(new Insets(10.0));
+        setUpRadioButton(SONG);
+        setUpRadioButton(ALBUM);
+        setUpRadioButton(PLAYLIST);
+        setUpRadioButton(ARTIST);
 
-        selectToggle.selectedToggleProperty().addListener(
-                event -> Center.setUpIdValidationTextField(
-                        ((ToggleData) selectToggle.getSelectedToggle().getUserData()).getData(), searchTextField));
-
-        selectToggle.selectToggle(selectToggle.getToggles().get(0));
+        resultTypeButtonGroup.onSelect(event -> updateTextField(Center.setUpIdValidationTextField(resultTypeButtonGroup.getSelectedData())));
+        resultTypeButtonGroup.selectRadioButton(0);
+        resultTypeButtonGroup.setAlignment(Pos.CENTER);
+        searchVBox.getChildren().add(1, resultTypeButtonGroup);
     }
 
-    private void setUpRadioButton(StringParamEvent event, String data) {
+    private void setUpRadioButton(String data) {
         JFXRadioButton radioButton = new JFXRadioButton(data.substring(0, 1).toUpperCase() + data.substring(1));
-        radioButton.setPadding(new Insets(10));
-        radioButton.setToggleGroup(selectToggle);
-        radioButton.setUserData(new ToggleData(event, data));
-        selectType.getChildren().add(radioButton);
+        radioButton.setUserData(data);
+        resultTypeButtonGroup.add(radioButton);
     }
 
     @FXML
     public void search() {
-        if (selectToggle.getSelectedToggle() != null && searchTextField.validate()) {
+        if (resultTypeButtonGroup.getSelected() != null && searchTextField.validate()) {
             // Start a new Thread to search in background
             String id = searchTextField.getText();
-            searchTextField.clear();
-            StringParamEvent event = ((ToggleData) selectToggle.getSelectedToggle().getUserData()).getEvent();
-            ReadStringTask searchTask = new ReadStringTask(id, event);
+            ReadStringTask searchTask = getSearchTask();
             searchProgress.visibleProperty().bind(searchTask.runningProperty());
             ThreadUtils.startNormalThread(searchTask);
         }
@@ -151,6 +155,26 @@ public class TabViewController implements Initializable {
                 return column.getComputedValue(param);
             }
         });
+    }
+
+    private ReadStringTask getSearchTask() {
+        switch (resultTypeButtonGroup.getSelectedData()) {
+            case PLAYLIST:
+                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdPlaylistSearchEvent());
+            case SONG:
+                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdSongSearchEvent());
+            case ALBUM:
+                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdAlbumSearchEvent());
+            case ARTIST:
+                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdArtistSearchEvent());
+        }
+        return null;
+    }
+
+    private void updateTextField(JFXTextField field) {
+        searchBox.getChildren().remove(searchTextField);
+        searchTextField = field;
+        searchBox.getChildren().add(0, searchTextField);
     }
 
     @FXML
