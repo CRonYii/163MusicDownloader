@@ -21,4 +21,10 @@ public class ReadStringTask<Void> extends Task<Void> {
         }
         return null;
     }
+
+    @Override
+    protected void failed() {
+        super.failed();
+        exceptionProperty().get().printStackTrace();
+    }
 }
