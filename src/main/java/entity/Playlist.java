@@ -2,7 +2,9 @@ package entity;
 
 import ui.Center;
 import util.Downloader;
+import util.Spider;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
@@ -20,9 +22,13 @@ public class Playlist implements Serializable {
         this.songList = songList;
     }
 
+    public Playlist(String id, String title) {
+        this(id, title, null);
+    }
+
     public void downloadAllSongs() {
-        Downloader.getInstance().downloadSong(songList);
-        Center.printToStatus(String.format("playlist %s, all songs added to download list\n", title));
+        Downloader.getInstance().downloadSong(getSongList());
+        Center.toast(String.format("playlist %s, all songs added to download list\n", title));
     }
 
     public String getId() {
@@ -34,15 +40,23 @@ public class Playlist implements Serializable {
     }
 
     public List<Song> getSongList() {
+        if (songList == null) {
+            try {
+                fetchSongList();
+            } catch (IOException e) {
+                Center.toast(String.format("Failed to get Playlist %s's songs", title));
+                e.printStackTrace();
+            }
+        }
         return songList;
     }
 
-    public void setSongList(List<Song> songList) {
-        this.songList = songList;
+    private void fetchSongList() throws IOException {
+        songList = Spider.getPlaylistByID(id).songList;
     }
 
     public int size() {
-        return songList.size();
+        return getSongList().size();
     }
 
     @Override
@@ -50,7 +64,6 @@ public class Playlist implements Serializable {
         return "Playlist{" +
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
-                ", songList=" + songList +
                 '}';
     }
 }

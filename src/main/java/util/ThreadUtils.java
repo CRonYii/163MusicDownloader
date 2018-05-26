@@ -11,7 +11,7 @@ public class ThreadUtils {
         return thread;
     });
 
-    public static void startNormalThread(Runnable runnable) {
+    public static void startThread(Runnable runnable) {
         normalServiceExecutor.execute(runnable);
     }
 

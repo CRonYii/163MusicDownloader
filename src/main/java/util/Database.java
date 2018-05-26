@@ -90,7 +90,7 @@ public class Database implements Serializable {
                 }
                 setSongDownloadURL(id, tried + 1);
             } else {
-                Center.printToStatus("Failed to get Download URL From ouo.us, give up, id: " + id);
+                Center.toast("Failed to get Download URL From ouo.us, give up, id: " + id);
                 System.err.println("Failed to get Download URL From ouo.us, give up, id: " + id);
             }
         }

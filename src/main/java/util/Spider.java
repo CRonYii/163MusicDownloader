@@ -31,6 +31,33 @@ public class Spider {
     public static final String TYPE_ALBUM = "10";
     public static final String TYPE_ARTIST = "100";
     public static final String TYPE_PLAYLIST = "1000";
+    public static final int LIMIT = 30;
+
+    private static final String[] userAgents = {
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1",
+            "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
+            "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
+            "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)",
+            "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)",
+            "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
+            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)",
+            "Mozilla/5.0 (Windows NT 6.3; Win64, x64; Trident/7.0; rv:11.0) like Gecko",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586",
+            "Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1"
+    };
+
+    private static String randomAgent() {
+        return userAgents[(int) (Math.random() * userAgents.length)];
+    }
 
     private static Connection get163Connection(String url) {
         return Jsoup.connect(url)
@@ -45,7 +72,7 @@ public class Spider {
                 .header("Pragma", "no-cache")
                 .header("Referer", "http,//music.163.com/")
                 .header("Upgrade-Insecure-Requests", "1")
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+                .userAgent(randomAgent());
     }
 
     public static String getSongDownloadURL(String songID) throws IOException {
@@ -174,12 +201,12 @@ public class Spider {
         }
     }
 
-    public static List<Song> searchSong(String keyword) throws IOException {
+    public static List<Song> searchSong(String keyword, int offset) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("s", keyword);
         jsonInput.put("type", TYPE_SONG);
-        jsonInput.put("offset", "0");
-        jsonInput.put("limit", "30");
+        jsonInput.put("offset", offset);
+        jsonInput.put("limit", LIMIT);
         jsonInput.put("csrf_token", "");
 
         Map<String, String> params = EncryptUtils.encrypt(jsonInput.toString());
@@ -190,16 +217,15 @@ public class Spider {
                 .execute();
 
         JSONObject data = JSONObject.fromObject(response.body());
-        System.out.println(data);
         return DataParser.getSongList(data);
     }
 
-    public static List<Playlist> searchPlaylist(String keyword) throws IOException {
+    public static List<Playlist> searchPlaylist(String keyword, int offset) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("s", keyword);
         jsonInput.put("type", TYPE_PLAYLIST);
-        jsonInput.put("offset", "0");
-        jsonInput.put("limit", "30");
+        jsonInput.put("offset", offset);
+        jsonInput.put("limit", LIMIT);
         jsonInput.put("csrf_token", "");
 
         Map<String, String> params = EncryptUtils.encrypt(jsonInput.toString());
@@ -213,12 +239,12 @@ public class Spider {
         return DataParser.getPlaylistList(data);
     }
 
-    public static List<Artist> searchArtist(String keyword) throws IOException, ElementNotFoundException {
+    public static List<Artist> searchArtist(String keyword, int offset) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("s", keyword);
         jsonInput.put("type", TYPE_ARTIST);
-        jsonInput.put("offset", "0");
-        jsonInput.put("limit", "30");
+        jsonInput.put("offset", offset);
+        jsonInput.put("limit", LIMIT);
         jsonInput.put("csrf_token", "");
 
         Map<String, String> params = EncryptUtils.encrypt(jsonInput.toString());
@@ -232,6 +258,25 @@ public class Spider {
         return DataParser.getArtistList(data);
     }
 
+    public static List<Album> searchAlbum(String keyword, int offset) throws IOException {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("s", keyword);
+        jsonInput.put("type", TYPE_ALBUM);
+        jsonInput.put("offset", offset);
+        jsonInput.put("limit", LIMIT);
+        jsonInput.put("csrf_token", "");
+
+        Map<String, String> params = EncryptUtils.encrypt(jsonInput.toString());
+        Connection connection = get163Connection(SEARCH_URL);
+        Connection.Response response = connection.data(params)
+                .method(Connection.Method.POST)
+                .ignoreContentType(true)
+                .execute();
+
+        JSONObject data = JSONObject.fromObject(response.body());
+        return DataParser.getAlbumList(data);
+    }
+
     public static List<Song> getSongListFromMusicFM(String url) throws IOException {
         Element body = Jsoup.connect(url)
                 .get()
@@ -243,7 +288,7 @@ public class Spider {
             String artist = songEle.selectFirst("p").text();
             if (title.contains(artist))
                 title = title.substring(artist.length() + 3);
-            Song song = searchSong(title + " " + artist).get(0);
+            Song song = searchSong(title + " " + artist, 0).get(0);
             songList.add(song);
         }
         return songList;

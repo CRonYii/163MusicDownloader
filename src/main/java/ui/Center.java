@@ -107,9 +107,12 @@ public class Center {
         return textField;
     }
 
-    public static void setUpTextField(String tag, JFXTextField textField) {
+    public static JFXTextField setUpTextField(String tag) {
+        JFXTextField textField = new JFXTextField();
+        textField.setValidators(new NonNullValidator("Keyword cannot be empty"));
         textField.setPromptText("Enter " + tag.substring(0, 1).toUpperCase() + tag.substring(1));
         textField.setLabelFloat(true);
+        return textField;
     }
 
     public static void printToStatus(String status) {
@@ -138,7 +141,7 @@ public class Center {
             for (Song song : dataList) {
                 song.setProperty();
             }
-            ThreadUtils.startNormalThread(() -> {
+            ThreadUtils.startThread(() -> {
                 for (Song song : dataList) {
                     song.setArtistAndAlbum();
                 }

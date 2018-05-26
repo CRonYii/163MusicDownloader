@@ -1,7 +1,5 @@
 package entity;
 
-import util.Database;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +24,6 @@ public class Artist implements Serializable {
         this.name = name;
         this.id = id;
         this.albumList = albumList;
-
-        Database.addArtist(this);
     }
 
     public void addAlbum(Album album) {
@@ -57,7 +53,6 @@ public class Artist implements Serializable {
         return "Artist{" +
                 "name='" + name + '\'' +
                 ", id='" + id + '\'' +
-                ", albumList=" + albumList +
                 '}';
     }
 

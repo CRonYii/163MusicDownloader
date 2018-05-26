@@ -2,6 +2,7 @@ package ui.fxml;
 
 import com.jfoenix.controls.*;
 import entity.Song;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -22,6 +23,8 @@ import java.util.function.Function;
 import static ui.Center.*;
 
 public class TabViewController implements Initializable {
+
+    private RadioButtonGroup searchTypeButtonGroup;
 
     private RadioButtonGroup resultTypeButtonGroup;
 
@@ -74,25 +77,38 @@ public class TabViewController implements Initializable {
         downloadSelectedButton.disableProperty().bind(Bindings.createBooleanBinding(() -> searchView.getSelectionModel().getSelectedItems().size() == 0, searchView.getSelectionModel().getSelectedItems()));
     }
 
-
     private void setUpRdToggle() {
+        searchTypeButtonGroup = new RadioButtonGroup(10.0);
+        searchTypeButtonGroup.setPadding(new Insets(10.0));
+        setUpRadioButton(KEYWORD, searchTypeButtonGroup);
+        setUpRadioButton(ID, searchTypeButtonGroup);
+
         resultTypeButtonGroup = new RadioButtonGroup(10.0);
         resultTypeButtonGroup.setPadding(new Insets(10.0));
-        setUpRadioButton(SONG);
-        setUpRadioButton(ALBUM);
-        setUpRadioButton(PLAYLIST);
-        setUpRadioButton(ARTIST);
+        setUpRadioButton(SONG, resultTypeButtonGroup);
+        setUpRadioButton(ALBUM, resultTypeButtonGroup);
+        setUpRadioButton(ARTIST, resultTypeButtonGroup);
+        setUpRadioButton(PLAYLIST, resultTypeButtonGroup);
 
-        resultTypeButtonGroup.onSelect(event -> updateTextField(Center.setUpIdValidationTextField(resultTypeButtonGroup.getSelectedData())));
+        searchTypeButtonGroup.selectRadioButton(0);
         resultTypeButtonGroup.selectRadioButton(0);
+
+        searchTypeButtonGroup.onSelect(event -> updateTextField());
+        searchTypeButtonGroup.setAlignment(Pos.CENTER);
+        searchVBox.getChildren().add(1, searchTypeButtonGroup);
+
+        resultTypeButtonGroup.onSelect(event -> updateTextField());
         resultTypeButtonGroup.setAlignment(Pos.CENTER);
-        searchVBox.getChildren().add(1, resultTypeButtonGroup);
+        searchVBox.getChildren().add(2, resultTypeButtonGroup);
+
+        updateTextField();
+        Platform.runLater(() -> searchTextField.requestFocus());
     }
 
-    private void setUpRadioButton(String data) {
+    private void setUpRadioButton(String data, RadioButtonGroup group) {
         JFXRadioButton radioButton = new JFXRadioButton(data.substring(0, 1).toUpperCase() + data.substring(1));
         radioButton.setUserData(data);
-        resultTypeButtonGroup.add(radioButton);
+        group.add(radioButton);
     }
 
     @FXML
@@ -102,7 +118,7 @@ public class TabViewController implements Initializable {
             String id = searchTextField.getText();
             ReadStringTask searchTask = getSearchTask();
             searchProgress.visibleProperty().bind(searchTask.runningProperty());
-            ThreadUtils.startNormalThread(searchTask);
+            ThreadUtils.startThread(searchTask);
         }
     }
 
@@ -122,7 +138,7 @@ public class TabViewController implements Initializable {
                     JFXButton button = new JFXButton("Download");
                     button.setStyle("-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;");
                     button.setButtonType(JFXButton.ButtonType.RAISED);
-                    button.setOnAction(event -> ThreadUtils.startNormalThread(new ReadStringTask(id, new StringParamEvent.SongDownloadEvent())));
+                    button.setOnAction(event -> ThreadUtils.startThread(new ReadStringTask(id, new StringParamEvent.SongDownloadEvent())));
                     setGraphic(button);
                     setText("");
                 } else {
@@ -158,20 +174,52 @@ public class TabViewController implements Initializable {
     }
 
     private ReadStringTask getSearchTask() {
-        switch (resultTypeButtonGroup.getSelectedData()) {
-            case PLAYLIST:
-                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdPlaylistSearchEvent());
-            case SONG:
-                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdSongSearchEvent());
-            case ALBUM:
-                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdAlbumSearchEvent());
-            case ARTIST:
-                return new ReadStringTask(searchTextField.getText(), new StringParamEvent.IdArtistSearchEvent());
+        switch (searchTypeButtonGroup.getSelectedData()) {
+            case KEYWORD:
+                return new ReadStringTask(searchTextField.getText(), getKeywordSearchEvent());
+            case ID:
+                return new ReadStringTask(searchTextField.getText(), getIDSearchEvent());
         }
         return null;
     }
 
+    private StringParamEvent getKeywordSearchEvent() {
+        switch (resultTypeButtonGroup.getSelectedData()) {
+            case PLAYLIST:
+                return new StringParamEvent.KeywordPlaylistSearchEvent();
+            case SONG:
+                return new StringParamEvent.KeywordSongSearchEvent();
+            case ALBUM:
+                return new StringParamEvent.KeywordAlbumSearchEvent();
+            case ARTIST:
+                return new StringParamEvent.KeywordArtistSearchEvent();
+        }
+        return null;
+    }
+
+    private StringParamEvent getIDSearchEvent() {
+        switch (resultTypeButtonGroup.getSelectedData()) {
+            case PLAYLIST:
+                return new StringParamEvent.IdPlaylistSearchEvent();
+            case SONG:
+                return new StringParamEvent.IdSongSearchEvent();
+            case ALBUM:
+                return new StringParamEvent.IdAlbumSearchEvent();
+            case ARTIST:
+                return new StringParamEvent.IdArtistSearchEvent();
+        }
+        return null;
+    }
+
+    private void updateTextField() {
+        if (searchTypeButtonGroup.getSelectedData().equals(ID))
+            updateTextField(Center.setUpIdValidationTextField(resultTypeButtonGroup.getSelectedData()));
+        else if (searchTypeButtonGroup.getSelectedData().equals(KEYWORD))
+            updateTextField(Center.setUpTextField(resultTypeButtonGroup.getSelectedData()));
+    }
+
     private void updateTextField(JFXTextField field) {
+        field.setOnAction(event -> search());
         searchBox.getChildren().remove(searchTextField);
         searchTextField = field;
         searchBox.getChildren().add(0, searchTextField);

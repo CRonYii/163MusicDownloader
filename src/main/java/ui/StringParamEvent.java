@@ -1,6 +1,7 @@
 package ui;
 
 import entity.Album;
+import entity.Artist;
 import entity.Playlist;
 import entity.Song;
 import util.Database;
@@ -193,9 +194,54 @@ public interface StringParamEvent {
         @Override
         public boolean run(String keyword) {
             try {
-                Center.toast("Searching Song keyword: " + keyword);
-                List<Song> songList = Spider.searchSong(keyword);
+                Center.toast("Searching Song: " + keyword);
+                List<Song> songList = Spider.searchSong(keyword, 0);
                 Center.setSearchList(songList);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    class KeywordPlaylistSearchEvent implements StringParamEvent {
+        @Override
+        public boolean run(String keyword) {
+            try {
+                Center.toast("Searching Playlist: " + keyword);
+                List<Playlist> playList = Spider.searchPlaylist(keyword, 0);
+                System.out.println(playList);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    class KeywordArtistSearchEvent implements StringParamEvent {
+        @Override
+        public boolean run(String keyword) {
+            try {
+                Center.toast("Searching Artist: " + keyword);
+                List<Artist> artistList = Spider.searchArtist(keyword, 0);
+                System.out.println(artistList);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    class KeywordAlbumSearchEvent implements StringParamEvent {
+        @Override
+        public boolean run(String keyword) {
+            try {
+                Center.toast("Searching Album: " + keyword);
+                List<Album> albumList = Spider.searchAlbum(keyword, 0);
+                System.out.println(albumList);
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

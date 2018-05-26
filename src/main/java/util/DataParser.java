@@ -36,7 +36,8 @@ public class DataParser {
         List<Playlist> playlistList = new ArrayList<>();
         for (int i = 0; i < playlists.size(); i++) {
             JSONObject playlist = playlists.getJSONObject(i);
-            playlistList.add(Spider.getPlaylistByID(playlist.getString("id")));
+//            playlistList.add(Spider.getPlaylistByID(playlist.getString("id")));
+            playlistList.add(new Playlist(playlist.getString("id"), playlist.getString("name")));
         }
         return playlistList;
     }
@@ -52,6 +53,19 @@ public class DataParser {
             artistList.add(getArtist(artist));
         }
         return artistList;
+    }
+
+    public static List<Album> getAlbumList(JSONObject data) {
+        if ((int) data.get("code") != 200)
+            return null;
+        JSONObject result = data.getJSONObject("result");
+        JSONArray albums = result.getJSONArray("albums");
+        List<Album> albumList = new ArrayList<>();
+        for (int i = 0; i < albums.size(); i++) {
+            JSONObject album = albums.getJSONObject(i);
+            albumList.add(getAlbum(album, getArtist(album.getJSONObject("artist"))));
+        }
+        return albumList;
     }
 
     public static Playlist getPlaylist(JSONObject data) {
@@ -97,6 +111,5 @@ public class DataParser {
             return null;
         return getSong(data.getJSONArray("songs").getJSONObject(0));
     }
-
 
 }

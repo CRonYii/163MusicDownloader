@@ -78,7 +78,7 @@ public class DownloadPopupController {
                 String id = textField.getText();
                 alert.hideWithAnimation();
 
-                ThreadUtils.startNormalThread(new ReadStringTask(id, task));
+                ThreadUtils.startThread(new ReadStringTask(id, task));
             }
         });
 
@@ -114,7 +114,7 @@ public class DownloadPopupController {
             String url = textField.getText();
             alert.hideWithAnimation();
 
-            ThreadUtils.startNormalThread(new ReadStringTask(url, task));
+            ThreadUtils.startThread(new ReadStringTask(url, task));
         });
 
         JFXButton closeButton = new JFXButton("CANCEL");

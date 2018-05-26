@@ -19,7 +19,6 @@ import ui.Center;
 import ui.DirectoryValidator;
 import ui.PositiveNumberValidator;
 import util.Database;
-import util.ElementNotFoundException;
 import util.ThreadUtils;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +30,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static util.Spider.searchArtist;
+import static util.Spider.searchAlbum;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
 public class OptionPopupController implements Initializable {
@@ -158,26 +157,14 @@ public class OptionPopupController implements Initializable {
     }
 
     public void debug() {
-        ThreadUtils.startNormalThread(() -> {
-//            try {
-//                List<Playlist> list;
-//                list = searchPlaylist("轻音乐");
-//                for (Playlist playlist : list) {
-//                    System.out.println(playlist.getSongList());
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+        ThreadUtils.startThread(() -> {
             try {
-                System.out.println(searchArtist("高桥优"));
+                System.out.println(searchAlbum("高桥优", 0));
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ElementNotFoundException e) {
                 e.printStackTrace();
             }
         });
     }
-
 
     private void makeSettingInput(JFXTextField textField, String label, String promptText) {
         textField.setFont(new Font(12.0));
