@@ -34,7 +34,7 @@ public class Album implements Serializable {
     }
 
     public void downloadAllSongs() {
-        Downloader.getInstance().downloadSong(songList);
+        Downloader.downloader.downloadSong(songList);
         Center.printToStatus(String.format("playlist id: %s, all songs added to download list\n", id));
     }
 

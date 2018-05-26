@@ -27,7 +27,7 @@ public class Playlist implements Serializable {
     }
 
     public void downloadAllSongs() {
-        Downloader.getInstance().downloadSong(getSongList());
+        Downloader.downloader.downloadSong(getSongList());
         Center.toast(String.format("playlist %s, all songs added to download list\n", title));
     }
 

@@ -40,13 +40,12 @@ public class Center {
     public static final String ID = "id";
     public static final String KEYWORD = "keyword";
 
-    public static long TOAST_FAST = 1000;
-
-    private static Label statusLabel;
-
-    private static final List<Runnable> closeEventList = new ArrayList<>();
+    public static final long TOAST_FAST = 1000;
+    public static final long TOAST_REGULAR = 2000;
+    public static final long TOAST_SLOW = 4000;
 
     private static File newSongDir;
+    private static final List<Runnable> closeEventList = new ArrayList<>();
 
     public static final EventHandler<WindowEvent> CLOSE_EVENT = (EventHandler<WindowEvent>) event -> {
         // set to new directory
@@ -68,7 +67,7 @@ public class Center {
         closeEventList.add(() -> {
             try {
                 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(Database.OUTPUT));
-                out.writeObject(Database.getInstance());
+                out.writeObject(Database.database);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,6 +76,10 @@ public class Center {
             runnable.run();
         }
     };
+
+    private static Label statusLabel;
+
+    private static JFXSnackbar toast;
     private static Scene rootScene;
     private static JFXTreeTableView<Song> searchView;
     private static Label searchListLabel;
@@ -123,7 +126,6 @@ public class Center {
         return rootScene.getWindow();
     }
 
-    public static long TOAST_REGULAR = 2000;
 
     public static void setRootScene(Scene rootScene) {
         Center.rootScene = rootScene;
@@ -161,8 +163,6 @@ public class Center {
         Center.newSongDir = newSongDir;
     }
 
-    public static long TOAST_SLOW = 4000;
-    private static JFXSnackbar toast;
 
     public static void setToast(JFXSnackbar toast) {
         Center.toast = toast;

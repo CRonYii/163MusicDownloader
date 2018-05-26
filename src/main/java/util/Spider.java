@@ -27,11 +27,11 @@ public class Spider {
 
     /* The number of albums to display in one page, set to 1000 because want all albums at once */
     private static final String DISPLAY_LIMIT = "1000";
-    public static final String TYPE_SONG = "1";
-    public static final String TYPE_ALBUM = "10";
-    public static final String TYPE_ARTIST = "100";
-    public static final String TYPE_PLAYLIST = "1000";
-    public static final int LIMIT = 30;
+    private static final String TYPE_SONG = "1";
+    private static final String TYPE_ALBUM = "10";
+    private static final String TYPE_ARTIST = "100";
+    private static final String TYPE_PLAYLIST = "1000";
+    private static final int LIMIT = 30;
 
     private static final String[] userAgents = {
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",

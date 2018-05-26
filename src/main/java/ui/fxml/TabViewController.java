@@ -66,12 +66,12 @@ public class TabViewController implements Initializable {
         setUpRdToggle();
         initSearchView();
 
-        listView.setItems(Downloader.getInstance().getDownloadList());
+        listView.setItems(Downloader.downloader.getDownloadList());
         listView.setCellFactory(cell -> new DownloadCell());
 
         downloadTab.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Download (%s)", Downloader.getInstance().getDownloadList().size()),
-                Downloader.getInstance().getDownloadList())
+                () -> String.format("Download (%s)", Downloader.downloader.getDownloadList().size()),
+                Downloader.downloader.getDownloadList())
         );
 
         downloadSelectedButton.disableProperty().bind(Bindings.createBooleanBinding(() -> searchView.getSelectionModel().getSelectedItems().size() == 0, searchView.getSelectionModel().getSelectedItems()));
@@ -112,7 +112,7 @@ public class TabViewController implements Initializable {
     }
 
     @FXML
-    public void search() {
+    private void search() {
         if (resultTypeButtonGroup.getSelected() != null && searchTextField.validate()) {
             // Start a new Thread to search in background
             String id = searchTextField.getText();

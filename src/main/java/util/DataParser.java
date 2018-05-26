@@ -28,7 +28,7 @@ public class DataParser {
         return songList;
     }
 
-    public static List<Playlist> getPlaylistList(JSONObject data) throws IOException {
+    public static List<Playlist> getPlaylistList(JSONObject data) {
         if ((int) data.get("code") != 200)
             return null;
         JSONObject result = data.getJSONObject("result");

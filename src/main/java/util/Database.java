@@ -70,17 +70,13 @@ public class Database implements Serializable {
         this.reconnectionTimes = reconnectionTimes;
     }
 
-    public static Database getInstance() {
-        return database;
-    }
-
     public static String setSongDownloadURL(String id, int tried) {
         String url = null;
         try {
             url = Spider.getSongDownloadURL(id);
             addSongDownloadURL(id, url);
         } catch (IOException e) {
-            Database data = Database.getInstance();
+            Database data = Database.database;
             if (tried < data.getReconnectionTimes()) {
                 System.err.printf("Failed to get Download URL, will try again in %s second, id: %s\n", data.getFailConnectionWaitTime(), id);
                 try {
@@ -99,69 +95,69 @@ public class Database implements Serializable {
 
     public static String getSongDownloadURL(String id) {
         if (hasSongDownloadURL(id))
-            return getInstance().songDownloadMap.get(id);
+            return database.songDownloadMap.get(id);
         return setSongDownloadURL(id, 0);
     }
 
     public static void addSongDownloadURL(String id, String url) {
-        getInstance().songDownloadMap.putIfAbsent(id, url);
+        database.songDownloadMap.putIfAbsent(id, url);
     }
 
     public static boolean hasSongDownloadURL(String id) {
-        return getInstance().songDownloadMap.containsKey(id);
+        return database.songDownloadMap.containsKey(id);
     }
 
-    public static Song getSong(String id) throws IOException, ElementNotFoundException {
+    public static Song getSong(String id) throws IOException {
         if (hasSong(id))
-            return getInstance().songMap.get(id);
+            return database.songMap.get(id);
         Song song = Spider.getSongByID(id);
         addSong(song);
         return song;
     }
 
     public static void addSong(Song song) {
-        getInstance().songMap.putIfAbsent(song.getId(), song);
+        database.songMap.putIfAbsent(song.getId(), song);
     }
 
     public static boolean hasSong(String id) {
-        return getInstance().songMap.containsKey(id);
+        return database.songMap.containsKey(id);
     }
 
     public static Artist getArtist(String id) throws IOException, ElementNotFoundException {
         if (hasArtist(id))
-            return getInstance().artistMap.get(id);
+            return database.artistMap.get(id);
         Artist artist = Spider.getArtistByID(id);
         addArtist(artist);
         return artist;
     }
 
     public static void addArtist(Artist artist) {
-        getInstance().artistMap.putIfAbsent(artist.getId(), artist);
+        database.artistMap.putIfAbsent(artist.getId(), artist);
     }
 
     public static boolean hasArtist(String id) {
-        return getInstance().artistMap.containsKey(id);
+        return database.artistMap.containsKey(id);
     }
 
     public static Album getAlbum(String id) throws IOException, ElementNotFoundException {
         if (hasAlbum(id))
-            return getInstance().albumMap.get(id);
+            return database.albumMap.get(id);
         Album album = Spider.getAlbumByID(id);
         addAlbum(album);
         return album;
     }
 
     public static void addAlbum(Album album) {
-        getInstance().albumMap.putIfAbsent(album.getId(), album);
+        database.albumMap.putIfAbsent(album.getId(), album);
     }
 
     public static boolean hasAlbum(String id) {
-        return getInstance().albumMap.containsKey(id);
+        return database.albumMap.containsKey(id);
     }
 
-    public static Playlist getPlaylist(String id) throws IOException, ElementNotFoundException {
+    public static Playlist getPlaylist(String id) throws IOException {
         if (hasPlaylist(id))
-            return getInstance().playlistMap.get(id);
+            return database.playlistMap.get(id);
         Playlist playlist = Spider.getPlaylistByID(id);
         addPlaylist(playlist);
 
@@ -169,11 +165,11 @@ public class Database implements Serializable {
     }
 
     public static void addPlaylist(Playlist playlist) {
-        getInstance().playlistMap.putIfAbsent(playlist.getId(), playlist);
+        database.playlistMap.putIfAbsent(playlist.getId(), playlist);
     }
 
     public static boolean hasPlaylist(String id) {
-        return getInstance().playlistMap.containsKey(id);
+        return database.playlistMap.containsKey(id);
     }
 
     public File getSongDir() {

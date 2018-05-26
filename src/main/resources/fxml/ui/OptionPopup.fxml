@@ -12,7 +12,7 @@
     </padding>
     <JFXButton fx:id="settingsButton" text="Settings" onAction="#openSettings" prefWidth="Infinity"/>
     <JFXButton fx:id="aboutButton" text="About" onAction="#about" prefWidth="Infinity"/>
-    <Separator orientation="HORIZONTAL"/>
+    <Separator/>
     <JFXButton fx:id="exitButton" text="Exit" onAction="#exit" prefWidth="Infinity"/>
     <JFXButton text="Debug" onAction="#debug" prefWidth="Infinity"/>
 </VBox>

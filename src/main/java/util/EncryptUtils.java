@@ -29,7 +29,7 @@ public class EncryptUtils {
         String encText = aesEncrypt(aesEncrypt(text, nonce), secKey);
         String encSecKey = rsaEncrypt(secKey, pubKey, modulus);
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put(PARAMS, encText);
         map.put(ENCSECKEY, encSecKey);
         return map;
@@ -55,14 +55,14 @@ public class EncryptUtils {
         text = new StringBuilder(text).reverse().toString();
         BigInteger rs = new BigInteger(String.format("%x", new BigInteger(1, text.getBytes())), 16)
                 .modPow(new BigInteger(pubKey, 16), new BigInteger(modulus, 16));
-        String r = rs.toString(16);
+        StringBuilder r = new StringBuilder(rs.toString(16));
         if (r.length() >= 256) {
             return r.substring(r.length() - 256, r.length());
         } else {
             while (r.length() < 256) {
-                r = 0 + r;
+                r.insert(0, 0);
             }
-            return r;
+            return r.toString();
         }
     }
 

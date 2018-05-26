@@ -37,9 +37,9 @@ public class OptionPopupController implements Initializable {
 
     private VBox settingRoot;
 
-    private final JFXTextField maxConcurrentField = new JFXTextField(String.valueOf(Database.getInstance().getMaxConcurrentDownload()));
-    private final JFXTextField waitTimeField = new JFXTextField(String.valueOf(Database.getInstance().getFailConnectionWaitTime()));
-    private final JFXTextField reconnectTimeField = new JFXTextField(String.valueOf(Database.getInstance().getReconnectionTimes()));
+    private final JFXTextField maxConcurrentField = new JFXTextField(String.valueOf(Database.database.getMaxConcurrentDownload()));
+    private final JFXTextField waitTimeField = new JFXTextField(String.valueOf(Database.database.getFailConnectionWaitTime()));
+    private final JFXTextField reconnectTimeField = new JFXTextField(String.valueOf(Database.database.getReconnectionTimes()));
 
     private final JFXTextField downloadFolderField = new JFXTextField(Database.database.getSongDir().getAbsolutePath());
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -104,13 +104,13 @@ public class OptionPopupController implements Initializable {
         }
 
         int maxConcurrent = Integer.parseInt(maxConcurrentField.getText());
-        Database.getInstance().setMaxConcurrentDownload(maxConcurrent);
+        Database.database.setMaxConcurrentDownload(maxConcurrent);
 
         int failTime = Integer.parseInt(waitTimeField.getText());
-        Database.getInstance().setFailConnectionWaitTime(failTime);
+        Database.database.setFailConnectionWaitTime(failTime);
 
         int reconnectTime = Integer.parseInt(reconnectTimeField.getText());
-        Database.getInstance().setReconnectionTimes(reconnectTime);
+        Database.database.setReconnectionTimes(reconnectTime);
 
         File folder = new File(downloadFolderField.getText());
         Center.setNewSongDir(folder);

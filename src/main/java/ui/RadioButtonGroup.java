@@ -32,14 +32,10 @@ public class RadioButtonGroup extends HBox {
         addAll(buttons);
     }
 
-    ;
-
     public RadioButtonGroup(double spacing, String... buttons) {
         super(spacing);
         addAll(buttons);
     }
-
-    ;
 
     public void selectRadioButton(int i) {
         toggleGroup.selectToggle((Toggle) getChildren().get(i));

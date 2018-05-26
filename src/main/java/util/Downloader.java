@@ -23,15 +23,11 @@ public class Downloader {
 
     public static final File TEMP_DIR = new File("temp/");
 
-    private static final Downloader downloader = new Downloader();
-
-    public static Downloader getInstance() {
-        return downloader;
-    }
+    public static final Downloader downloader = new Downloader();
 
     private final ObservableList<Download> downloadList;
 
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(Database.getInstance().getMaxConcurrentDownload(),
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(Database.database.getMaxConcurrentDownload(),
             runnable -> {
                 Thread thread = Executors.defaultThreadFactory().newThread(runnable);
                 thread.setDaemon(true);

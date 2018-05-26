@@ -27,10 +27,6 @@ public interface StringParamEvent {
                 Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
                 System.err.printf("Unable to get playlist, id: %s\n", id);
                 return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
-                e.printStackTrace();
-                return false;
             }
             return true;
         }
@@ -45,10 +41,6 @@ public interface StringParamEvent {
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download song, id: %s\n", id));
                 System.err.printf("Unable to download song, id: %s\n", id);
-                return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get song, id: %s\n", id));
-                e.printStackTrace();
                 return false;
             }
             return true;
@@ -117,10 +109,6 @@ public interface StringParamEvent {
                 Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
                 System.err.printf("Unable to get playlist, id: %s\n", id);
                 return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
-                e.printStackTrace();
-                return false;
             }
             return true;
         }
@@ -138,10 +126,6 @@ public interface StringParamEvent {
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download song, id: %s\n", id));
                 System.err.printf("Unable to download song, id: %s\n", id);
-                return false;
-            } catch (ElementNotFoundException e) {
-                Center.printToStatus(String.format("Unable to get song, id: %s\n", id));
-                e.printStackTrace();
                 return false;
             }
             return true;

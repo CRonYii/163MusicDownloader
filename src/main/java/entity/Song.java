@@ -49,7 +49,7 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
      * @param dir directory
      */
     public void download(File dir) {
-        Downloader.getInstance().downloadSong(Song.this, dir);
+        Downloader.downloader.downloadSong(Song.this, dir);
     }
 
     public void download() {
