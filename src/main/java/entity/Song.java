@@ -1,38 +1,54 @@
 package entity;
 
-import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import util.Database;
-import util.Downloader;
-import util.ElementNotFoundException;
-import util.Spider;
+import com.jfoenix.controls.JFXButton;
+import javafx.scene.control.TreeTableCell;
+import ui.ReadStringTask;
+import ui.StringParamEvent;
+import util.*;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class Song extends RecursiveTreeObject<Song> implements Serializable {
+public class Song extends Entity implements Serializable {
 
     private static final long serialVersionUID = 501L;
 
-    private final String id;
+    private static final List<String> columns = new ArrayList<>(Arrays.asList("Name", "Artist", "Album", "Action"));
+    private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
+            constProp("name"),
+            constProp("artist", "getArtistName"),
+            constProp("album", "getAlbumName"),
+            constProp("id").setCell(param -> new TreeTableCell<Entity, String>() {
+                @Override
+                protected void updateItem(String id, boolean empty) {
+                    if (!empty) {
+                        Song song = (Song) this.getTableColumn().getTreeTableView().getTreeItem(this.getIndex()).getValue();
+                        JFXButton button = new JFXButton("Download");
+                        button.setStyle("-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;");
+                        button.setButtonType(JFXButton.ButtonType.RAISED);
+                        button.setOnAction(event -> ThreadUtils.startThread(new ReadStringTask(id, new StringParamEvent.SongDownloadEvent())));
+                        setGraphic(button);
+                        setText("");
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            })
+    ));
+
     private final String name;
+    private final String id;
     private Artist artist;
     private Album album;
-
-    private transient StringProperty IDProperty;
-    private transient StringProperty titleProperty;
-    private transient StringProperty artistName;
-    private transient StringProperty albumName;
 
     public Song(String id, String name, Artist artist, Album album) {
         this.id = id;
         this.name = Downloader.makeStringValidForWindowsFile(name);
         setArtist(artist);
         setAlbum(album);
-
-        this.titleProperty = new SimpleStringProperty(this.name);
-        this.IDProperty = new SimpleStringProperty(this.id);
 
         Database.addSong(this);
     }
@@ -60,33 +76,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         }
     }
 
-    public void setProperty() {
-        setIDProperty();
-        setTitleProperty();
-        setArtistProperty();
-        setAlbumProperty();
-    }
-
-    private void setIDProperty() {
-        if (IDProperty == null)
-            this.IDProperty = new SimpleStringProperty(id);
-    }
-
-    private void setTitleProperty() {
-        if (titleProperty == null)
-            this.titleProperty = new SimpleStringProperty(name);
-    }
-
-    private void setArtistProperty() {
-        if (artistName == null && artist != null)
-            this.artistName = new SimpleStringProperty(artist.getName());
-    }
-
-    private void setAlbumProperty() {
-        if (albumName == null && album != null)
-            this.albumName = new SimpleStringProperty(album.getName());
-    }
-
     public String getId() {
         return id;
     }
@@ -95,35 +84,26 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         return name;
     }
 
-    public String getTitleProperty() {
-        return titleProperty.get();
-    }
-
-    public StringProperty titlePropertyProperty() {
-        return titleProperty;
-    }
-
-    public StringProperty artistNameProperty() {
-        return artistName;
-    }
-
-    public StringProperty IDPropertyProperty() {
-        return IDProperty;
-    }
-
-    public StringProperty albumNameProperty() {
-        return albumName;
-    }
-
     public Artist getArtist() {
         return artist;
+    }
+
+    public String getArtistName() {
+        if (artist == null)
+            return "";
+        return artist.getName();
+    }
+
+    public String getAlbumName() {
+        if (album == null)
+            return "";
+        return album.getName();
     }
 
     public void setArtist(Artist artist) {
         if (artist == null)
             return;
         this.artist = artist;
-        this.artistName = new SimpleStringProperty(this.artist.getName());
     }
 
     public Album getAlbum() {
@@ -134,7 +114,6 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
         if (album == null)
             return;
         this.album = album;
-        this.albumName = new SimpleStringProperty(this.album.getName());
     }
 
     public String getDownloadURL() {
@@ -152,6 +131,16 @@ public class Song extends RecursiveTreeObject<Song> implements Serializable {
     }
 
     public boolean exists() {
-        return new File(Database.database.getSongDir() + "\\" + getArtist().getName() + " - " + getTitleProperty() + ".mp3").exists();
+        return new File(Database.database.getSongDir() + "\\" + getArtist().getName() + " - " + getName() + ".mp3").exists();
+    }
+
+    @Override
+    public List<String> getColumns() {
+        return columns;
+    }
+
+    @Override
+    public List<PropertyDefinition> getProperties() {
+        return properties;
     }
 }

@@ -1,9 +1,11 @@
 package ui.fxml;
 
 import com.jfoenix.controls.*;
+import entity.Entity;
 import entity.Song;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -16,6 +18,7 @@ import util.Downloader;
 import util.ThreadUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 import java.util.function.Function;
 
 import static ui.Center.*;
@@ -36,7 +39,7 @@ public class TabViewController {
     @FXML
     private JFXListView<Downloader.Download> listView;
     @FXML
-    private JFXTreeTableView<Song> searchView;
+    private JFXTreeTableView<Entity> searchView;
     /*    @FXML
         private JFXTreeTableColumn<Song, String> titleColumn;
         @FXML
@@ -125,37 +128,20 @@ public class TabViewController {
         searchView.setShowRoot(false);
         searchView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-/*        setupCellValueFactory(titleColumn, Song::titlePropertyProperty);
-        setupCellValueFactory(artistColumn, Song::artistNameProperty);
-        setupCellValueFactory(albumColumn, Song::albumNameProperty);
-        setupCellValueFactory(actionColumn, Song::IDPropertyProperty);
-        actionColumn.setCellFactory(param -> new TreeTableCell<Song, String>() {
-            @Override
-            protected void updateItem(String id, boolean empty) {
-                if (!empty) {
-                    JFXButton button = new JFXButton("Download");
-                    button.setStyle("-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;");
-                    button.setButtonType(JFXButton.ButtonType.RAISED);
-                    button.setOnAction(event -> ThreadUtils.startThread(new ReadStringTask(id, new StringParamEvent.SongDownloadEvent())));
-                    setGraphic(button);
-                    setText("");
-                } else {
-                    setGraphic(null);
-                }
-            }
-        });*/
-
         searchFilterField.textProperty().addListener((observable, oldValue, newValue) ->
-                searchView.setPredicate(songProp -> {
-                    final Song song = songProp.getValue();
+                searchView.setPredicate(prop -> {
                     String filter = newValue.toLowerCase();
-                    return song.getName().toLowerCase().contains(filter)
-                            || (song.getArtist() != null && song.getArtist().getName().toLowerCase().contains(filter))
-                            || (song.getAlbum() != null && song.getAlbum().getName().toLowerCase().contains(filter));
+                    Map<String, StringProperty> propertyMap = prop.getValue().getPropertyMap();
+                    for (StringProperty property : propertyMap.values())
+                        if (property.get().toLowerCase().contains(filter))
+                            return true;
+                    return false;
                 }));
+
         selectionLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> searchView.getSelectionModel().getSelectedCells().size() + " song(s) selected",
-                searchView.getSelectionModel().getSelectedItems()));
+                () -> searchView.getSelectionModel().getSelectedCells().size() + " result(s) selected",
+                searchView.getSelectionModel().getSelectedItems())
+        );
 
         Center.setSearchView(searchView);
         Center.setSearchListLabel(searchListLabel);
@@ -226,19 +212,20 @@ public class TabViewController {
         searchBox.getChildren().add(0, searchTextField);
     }
 
+    // TODO: Might need Entity Support Download
     @FXML
     public void downloadAll() {
         if (searchView.getRoot() == null)
             return;
-        for (TreeItem<Song> songTreeItem : searchView.getRoot().getChildren()) {
-            songTreeItem.getValue().download();
+        for (TreeItem<Entity> songTreeItem : searchView.getRoot().getChildren()) {
+//            songTreeItem.getValue().download();
         }
     }
 
     @FXML
     public void downloadSelected() {
-        for (TreeTablePosition<Song, ?> cell : searchView.getSelectionModel().getSelectedCells()) {
-            cell.getTreeItem().getValue().download();
+        for (TreeTablePosition<Entity, ?> cell : searchView.getSelectionModel().getSelectedCells()) {
+//            cell.getTreeItem().getValue().download();
         }
     }
 }

@@ -79,10 +79,10 @@ public class Downloader {
     public void downloadSong(Song song, File dir) {
         song.setArtistAndAlbum();
         if (song.exists()) {
-            Center.printToStatus("Song: " + song.getTitleProperty() + ", already downloaded");
+            Center.printToStatus("Song: " + song.getName() + ", already downloaded");
             return;
         }
-        File file = new File(dir, song.getArtist().getName() + " - " + song.getTitleProperty() + "_temp.mp3");
+        File file = new File(dir, song.getArtist().getName() + " - " + song.getName() + "_temp.mp3");
         Download download = new Download(file, song);
         addDownload(download);
     }
@@ -104,7 +104,7 @@ public class Downloader {
             mp3file.setId3v2Tag(id3v2Tag);
         }
         id3v2Tag.setArtist(song.getArtist().getName());
-        id3v2Tag.setTitle(song.getTitleProperty());
+        id3v2Tag.setTitle(song.getName());
         id3v2Tag.setAlbum(song.getAlbum().getName());
         String newFileName = Database.database.getSongDir() + "\\" + id3v2Tag.getArtist() + " - " + id3v2Tag.getTitle() + ".mp3";
         mp3file.save(newFileName);
@@ -139,7 +139,7 @@ public class Downloader {
         private void download() throws MalformedURLException {
             String url = song.getDownloadURL();
             if (url == null) {
-                Center.printToStatus("Unable to get URL for song " + song.getTitleProperty() + ", append task at the end of download list.");
+                Center.printToStatus("Unable to get URL for song " + song.getName() + ", append task at the end of download list.");
                 addDownload(new Download(outputFile, song));
                 return;
             }
@@ -185,7 +185,7 @@ public class Downloader {
                     outputFile.delete();
             }
             this.cancel();
-            Center.printToStatus("Cancelled download song: " + song.getTitleProperty());
+            Center.printToStatus("Cancelled download song: " + song.getName());
         }
 
         public Song getSong() {
@@ -198,7 +198,7 @@ public class Downloader {
 
         @Override
         public String toString() {
-            return song.getArtist().getName() + " - " + song.getTitleProperty() + " - " + getStatus();
+            return song.getArtist().getName() + " - " + song.getName() + " - " + getStatus();
         }
 
         @Override

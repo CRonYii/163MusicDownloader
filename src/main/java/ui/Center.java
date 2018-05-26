@@ -1,22 +1,20 @@
 package ui;
 
-import com.jfoenix.controls.JFXSnackbar;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import entity.Song;
+import entity.Entity;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeTableColumn;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import util.Database;
 import util.Downloader;
-import util.ThreadUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +25,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,9 +39,9 @@ public class Center {
     public static final String ID = "id";
     public static final String KEYWORD = "keyword";
 
-    public static final long TOAST_FAST = 1000;
+    public static final long TOAST_SHORT = 1000;
     public static final long TOAST_REGULAR = 2000;
-    public static final long TOAST_SLOW = 4000;
+    public static final long TOAST_LONG = 4000;
 
     private static File newSongDir;
     private static final List<Runnable> closeEventList = new ArrayList<>();
@@ -70,6 +69,7 @@ public class Center {
                 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(Database.OUTPUT));
                 out.writeObject(Database.database);
             } catch (IOException e) {
+                Database.OUTPUT.delete();
                 e.printStackTrace();
             }
         });
@@ -82,7 +82,7 @@ public class Center {
 
     private static JFXSnackbar toast;
     private static Scene rootScene;
-    private static JFXTreeTableView<Song> searchView;
+    private static JFXTreeTableView<Entity> searchView;
     private static Label searchListLabel;
 
     public static void setLabel(Label statusLabel) {
@@ -132,23 +132,42 @@ public class Center {
         Center.rootScene = rootScene;
     }
 
-    public static void setSearchView(JFXTreeTableView<Song> searchView) {
+    public static void setSearchView(JFXTreeTableView<Entity> searchView) {
         Center.searchView = searchView;
     }
 
-    public static void setSearchList(List<Song> searchList) {
+    public static void setSearchList(List<Entity> searchList) {
+        if (searchList.isEmpty()) {
+            Center.toast(String.format("Found 0 results on Search"), TOAST_LONG);
+            return;
+        }
         Platform.runLater(() -> {
-            ObservableList<Song> dataList = FXCollections.observableArrayList(searchList);
-            searchView.setRoot(new RecursiveTreeItem<>(dataList, RecursiveTreeObject::getChildren));
+            ObservableList<Entity> dataList = FXCollections.observableArrayList(searchList);
             searchListLabel.setText(String.format("Found %s results", searchList.size()));
-            for (Song song : dataList) {
-                song.setProperty();
-            }
-            ThreadUtils.startThread(() -> {
-                for (Song song : dataList) {
-                    song.setArtistAndAlbum();
-                }
+
+            searchView.getColumns().clear();
+            Entity entity = searchList.get(0);
+            List<String> columns = entity.getColumns();
+            double width = Main.WIDTH / columns.size();
+            columns.forEach(columnName -> {
+                JFXTreeTableColumn<Entity, String> column = new JFXTreeTableColumn<>(columnName);
+                column.setPrefWidth(width);
+                setUpCellValueFactory(column, (Entity e) -> e.getPropertyMap().get(columnName));
+                if (entity.getColumnFactoryMap().containsKey(columnName) && entity.getColumnFactoryMap().get(columnName) != null)
+                    column.setCellFactory(entity.getColumnFactoryMap().get(columnName));
+                searchView.getColumns().add(column);
             });
+            searchView.setRoot(new RecursiveTreeItem<>(dataList, RecursiveTreeObject::getChildren));
+        });
+    }
+
+    private static void setUpCellValueFactory(JFXTreeTableColumn<Entity, String> column, Function<Entity, StringProperty> mapper) {
+        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Entity, String> param) -> {
+            if (column.validateValue(param)) {
+                return mapper.apply(param.getValue().getValue());
+            } else {
+                return column.getComputedValue(param);
+            }
         });
     }
 

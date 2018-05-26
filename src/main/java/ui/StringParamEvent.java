@@ -79,7 +79,7 @@ public interface StringParamEvent {
         public boolean run(String url) {
             try {
                 List<Song> songList = Spider.getSongListFromMusicFM(url);
-                Center.setSearchList(songList);
+                Center.setSearchList(new ArrayList<>(songList));
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -95,7 +95,7 @@ public interface StringParamEvent {
             try {
                 Center.toast("Searching Playlist id: " + id);
                 Playlist playlist = Database.getPlaylist(id);
-                Center.setSearchList(playlist.getSongList());
+                Center.setSearchList(new ArrayList<>(playlist.getSongList()));
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to get playlist, id: %s\n", id));
                 System.err.printf("Unable to get playlist, id: %s\n", id);
@@ -113,7 +113,7 @@ public interface StringParamEvent {
                 Song song = Database.getSong(id);
                 List<Song> songList = new ArrayList<>();
                 songList.add(song);
-                Center.setSearchList(songList);
+                Center.setSearchList(new ArrayList<>(songList));
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download song, id: %s\n", id));
                 System.err.printf("Unable to download song, id: %s\n", id);
@@ -128,7 +128,8 @@ public interface StringParamEvent {
         public boolean run(String id) {
             try {
                 Center.toast("Searching Album id: " + id);
-                Center.setSearchList(Database.getAlbum(id).getSongList());
+                List<Song> songList = Database.getAlbum(id).getSongList();
+                Center.setSearchList(new ArrayList<>(songList));
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download album, id: %s\n", id));
                 System.err.printf("Unable to download album, id: %s\n", id);
@@ -143,8 +144,8 @@ public interface StringParamEvent {
         public boolean run(String id) {
             try {
                 Center.toast("Searching Artist id: " + id);
-                System.out.println(Database.getArtist(id).getAlbumList().get(0).getSongList());
-                Center.setSearchList(Database.getArtist(id).getSongList());
+                List<Song> songList = Database.getArtist(id).getSongList();
+                Center.setSearchList(new ArrayList<>(songList));
             } catch (IOException e) {
                 Center.printToStatus(String.format("Unable to download artist's songs, id: %s\n", id));
                 System.err.printf("Unable to download artist's songs, id: %s\n", id);
@@ -160,7 +161,7 @@ public interface StringParamEvent {
             try {
                 Center.toast("Searching Song: " + keyword);
                 List<Song> songList = Spider.searchSong(keyword, 0);
-                Center.setSearchList(songList);
+                Center.setSearchList(new ArrayList<>(songList));
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
