@@ -106,7 +106,7 @@ public class Spider {
         return album;
     }
 
-    public static Song getSongByID(String songId) throws IOException, ElementNotFoundException {
+    public static Song getSongByID(String songId) throws IOException {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("ids", "[" + songId + "]");
         jsonInput.put("csrf_token", "");

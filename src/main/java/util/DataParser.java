@@ -93,6 +93,8 @@ public class DataParser {
     }
 
     public static Song getSongDetail(JSONObject data) {
+        if ((int) data.get("code") != 200)
+            return null;
         return getSong(data.getJSONArray("songs").getJSONObject(0));
     }
 
