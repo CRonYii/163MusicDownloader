@@ -1,4 +1,4 @@
-package ui;
+package ui.fxml;
 
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
@@ -6,7 +6,6 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,6 +14,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ui.Center;
+import ui.DirectoryValidator;
+import ui.PositiveNumberValidator;
 import util.Database;
 
 import javax.annotation.PostConstruct;
@@ -23,38 +25,39 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 // TODO Migrate the Setting to a separate window (do not use JFXAlert any more)
-public class OptionPopupController implements Initializable {
+public class OptionPopupController {
 
     private VBox settingRoot;
 
-    private final JFXTextField maxConcurrentField = new JFXTextField(String.valueOf(Database.getInstance().getMaxConcurrentDownload()));
-    private final JFXTextField waitTimeField = new JFXTextField(String.valueOf(Database.getInstance().getFailConnectionWaitTime()));
-    private final JFXTextField reconnectTimeField = new JFXTextField(String.valueOf(Database.getInstance().getReconnectionTimes()));
+    private final JFXTextField maxConcurrentField = new JFXTextField(String.valueOf(Database.database.getMaxConcurrentDownload()));
+    private final JFXTextField waitTimeField = new JFXTextField(String.valueOf(Database.database.getFailConnectionWaitTime()));
+    private final JFXTextField reconnectTimeField = new JFXTextField(String.valueOf(Database.database.getReconnectionTimes()));
 
-    private final JFXTextField downloadFolderField = new JFXTextField(Database.getSongDir().getAbsolutePath());
+    private final JFXTextField downloadFolderField = new JFXTextField(Database.database.getSongDir().getAbsolutePath());
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private final JFXButton browseButton = new JFXButton("Browse");
     private JFXAlert setting;
     private boolean isInit = false;
 
+    @FXML
     @PostConstruct
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         settingRoot = new VBox();
         settingRoot.setSpacing(20.0);
 
         makeSettingInput(maxConcurrentField,
-                "This number will determine the number of songs get download at the same time\n(Making this number too large may cause the server refuse connection)",
+                "This number will determine the number of songs get download at the same time\n" +
+                        "(Making this number too large may cause the server refuse connection)\n" +
+                        "applied after restart",
                 "Maximum Number of Concurrent Download");
         makeSettingInput(waitTimeField,
                 "Time to wait before reconnection whenever download connection failed",
                 "Wait Time (sec)");
         makeSettingInput(reconnectTimeField,
-                "Maximum number of reconnection of a single download\nDownload will be cancelled if reconnection failed times is more than this number",
+                "Maximum number of reconnection of a single download\n" +
+                        "Download will be cancelled if reconnection failed times is more than this number",
                 "Times of Reconnection");
 
         setFolderBrowser();
@@ -95,16 +98,16 @@ public class OptionPopupController implements Initializable {
         }
 
         int maxConcurrent = Integer.parseInt(maxConcurrentField.getText());
-        Database.getInstance().setMaxConcurrentDownload(maxConcurrent);
+        Database.database.setMaxConcurrentDownload(maxConcurrent);
 
         int failTime = Integer.parseInt(waitTimeField.getText());
-        Database.getInstance().setFailConnectionWaitTime(failTime);
+        Database.database.setFailConnectionWaitTime(failTime);
 
         int reconnectTime = Integer.parseInt(reconnectTimeField.getText());
-        Database.getInstance().setReconnectionTimes(reconnectTime);
+        Database.database.setReconnectionTimes(reconnectTime);
 
         File folder = new File(downloadFolderField.getText());
-        Database.setSongDir(folder);
+        Center.setNewSongDir(folder);
 
         // close the alert
         setting.hideWithAnimation();
@@ -126,7 +129,8 @@ public class OptionPopupController implements Initializable {
         hBox.setSpacing(10.0);
         settingRoot.getChildren().addAll(
                 new Label("Choose the folder that store the songs\n" +
-                        "(Every time you change it, the song will be copied over automatically)"),
+                        "(Every time you change it, the song will be copied over automatically)\n" +
+                        "Applied after restart"),
                 hBox
         );
     }
@@ -145,7 +149,6 @@ public class OptionPopupController implements Initializable {
         Center.CLOSE_EVENT.handle(new WindowEvent(Center.getRootWindow(), WindowEvent.WINDOW_CLOSE_REQUEST));
         Platform.exit();
     }
-
 
     private void makeSettingInput(JFXTextField textField, String label, String promptText) {
         textField.setFont(new Font(12.0));

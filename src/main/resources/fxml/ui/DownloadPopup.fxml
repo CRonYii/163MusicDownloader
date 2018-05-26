@@ -6,14 +6,14 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1"
-      minWidth="200" minHeight="100" fx:controller="ui.DownloadPopupController">
+      minWidth="200" minHeight="100" fx:controller="ui.fxml.DownloadPopupController">
     <padding>
         <Insets top="5.0" bottom="5.0"/>
     </padding>
-    <JFXButton text="Playlist" onAction="#downloadPlaylist" prefWidth="Infinity"></JFXButton>
-    <JFXButton text="Single Song" onAction="#downloadSong" prefWidth="Infinity"></JFXButton>
-    <JFXButton text="Album" onAction="#downloadAlbum" prefWidth="Infinity"></JFXButton>
-    <JFXButton text="All Songs of an Artist" onAction="#downloadArtist" prefWidth="Infinity"></JFXButton>
-    <Separator orientation="HORIZONTAL"/>
-    <JFXButton text="Open Songs Folder" onAction="#openSongsFolder" prefWidth="Infinity"></JFXButton>
+    <JFXButton text="Playlist" onAction="#downloadPlaylist" prefWidth="Infinity"/>
+    <JFXButton text="Single Song" onAction="#downloadSong" prefWidth="Infinity"/>
+    <JFXButton text="Album" onAction="#downloadAlbum" prefWidth="Infinity"/>
+    <JFXButton text="All Songs of an Artist" onAction="#downloadArtist" prefWidth="Infinity"/>
+    <Separator/>
+    <JFXButton text="Open Songs Folder" onAction="#openSongsFolder" prefWidth="Infinity"/>
 </VBox>
