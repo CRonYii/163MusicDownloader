@@ -127,6 +127,7 @@ public class TabViewController {
         if (resultTypeButtonGroup.getSelected() != null && searchTextField.validate()) {
             // Start a new Thread to search in background
             String input = searchTextField.getText();
+            searchTextField.clear();
             switch (searchTypeButtonGroup.getSelectedData()) {
                 case KEYWORD:
                     SearchService.create(input, getKeywordSearchEvent()).load();
@@ -206,6 +207,7 @@ public class TabViewController {
                 searchView.getColumns().add(column);
             });
             searchView.setRoot(new RecursiveTreeItem<>(dataList, RecursiveTreeObject::getChildren));
+            searchView.scrollTo(0);
         });
     }
 
