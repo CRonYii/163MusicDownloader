@@ -78,7 +78,7 @@ public class Downloader {
      */
     public void downloadSong(Song song, File dir) {
         if (song.exists()) {
-            Center.printToStatus("Song: " + song.getName() + ", already downloaded");
+            Center.toast("Song: " + song.getName() + ", already downloaded");
             return;
         }
         File file = new File(dir, song.getArtist().getName() + " - " + song.getName() + "_temp.mp3");

@@ -2,11 +2,12 @@ package ui.fxml;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import entity.DownloadableEntity;
 import entity.Entity;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -21,11 +22,11 @@ import util.ThreadUtils;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import java.util.TimerTask;
 import java.util.function.Function;
 
 import static ui.Center.*;
 
-// TODO: implement Paging / lazy loading
 // TODO: Possibly Forward / Backward Navigation
 public class TabViewController {
 
@@ -40,9 +41,9 @@ public class TabViewController {
     @FXML
     private HBox searchBox;
     @FXML
-    private JFXListView<Downloader.Download> listView;
+    private JFXListView<Downloader.Download> downloadListView;
     @FXML
-    private JFXTreeTableView<Entity> searchView;
+    private JFXTreeTableView<DownloadableEntity> searchView;
     @FXML
     private JFXProgressBar searchProgress;
     @FXML
@@ -58,6 +59,16 @@ public class TabViewController {
 
     public static TabViewController instance;
 
+    private final long SCROLL_INVOKE_TIME = 1000;
+    private final long SCROLL_TO_SEARCH_TIME = 4;
+    private long scrollCounter = 0;
+    private final TimerTask scrollTask = new TimerTask() {
+        @Override
+        public void run() {
+            scrollCounter = 0;
+        }
+    };
+
     @FXML
     @PostConstruct
     public void initialize() {
@@ -66,8 +77,8 @@ public class TabViewController {
         setUpRdToggle();
         initSearchView();
 
-        listView.setItems(Downloader.downloader.getDownloadList());
-        listView.setCellFactory(cell -> new DownloadCell());
+        downloadListView.setItems(Downloader.downloader.getDownloadList());
+        downloadListView.setCellFactory(cell -> new DownloadCell());
 
         downloadTab.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Download (%s)", Downloader.downloader.getDownloadList().size()),
@@ -115,10 +126,15 @@ public class TabViewController {
     private void search() {
         if (resultTypeButtonGroup.getSelected() != null && searchTextField.validate()) {
             // Start a new Thread to search in background
-            String id = searchTextField.getText();
-            ReadStringTask searchTask = getSearchTask();
-            searchProgress.visibleProperty().bind(searchTask.runningProperty());
-            ThreadUtils.startThread(searchTask);
+            String input = searchTextField.getText();
+            switch (searchTypeButtonGroup.getSelectedData()) {
+                case KEYWORD:
+                    SearchService.create(input, getKeywordSearchEvent()).load();
+                    break;
+                case ID:
+                    SearchService.create(input, getIDSearchEvent()).load();
+                    break;
+            }
         }
     }
 
@@ -141,25 +157,50 @@ public class TabViewController {
                 () -> searchView.getSelectionModel().getSelectedCells().size() + " result(s) selected",
                 searchView.getSelectionModel().getSelectedItems())
         );
+
+        searchListLabel.textProperty().bind(Bindings.createStringBinding(
+                () -> String.format("Found %s results", searchView.getCurrentItemsCount()),
+                searchView.currentItemsCountProperty())
+        );
+
+        searchView.setOnScroll(event -> {
+            if (SearchService.instance().isFinished())
+                return;
+            if ((event.getTarget() instanceof TreeTableCell || event.getTarget() instanceof Button) && event.getDeltaY() < 0) {
+                if (scrollCounter == 0) {
+                    Center.toast("Keep Scrolling to search more", TOAST_SHORT);
+                    ThreadUtils.startDelayedThread(scrollTask, SCROLL_INVOKE_TIME);
+                }
+                if (++scrollCounter > SCROLL_TO_SEARCH_TIME) {
+                    scrollCounter = 0;
+                    scrollTask.cancel();
+                    SearchService.instance().load();
+                }
+            }
+        });
     }
 
-    public void setSearchList(List<Entity> searchList) {
-        if (searchList.isEmpty()) {
-            Center.toast(String.format("Found 0 results on Search"), TOAST_LONG);
+    public void setSearchList(ObservableList<DownloadableEntity> dataList) {
+        if (dataList.isEmpty()) {
+            Center.toast("Found 0 results on Search", TOAST_LONG);
             return;
         }
         Platform.runLater(() -> {
-            ObservableList<Entity> dataList = FXCollections.observableArrayList(searchList);
-            searchListLabel.setText(String.format("Found %s results", searchList.size()));
-
             searchView.getColumns().clear();
-            Entity entity = searchList.get(0);
+            Entity entity = dataList.get(0);
+
             List<String> columns = entity.getColumns();
-            double width = Main.WIDTH / columns.size();
+            double width = Main.WIDTH / columns.size() + 1;
+            // Add the default id (auto-increment) Column
+            JFXTreeTableColumn<DownloadableEntity, String> defaultColumn = new JFXTreeTableColumn<>("#");
+            defaultColumn.setPrefWidth(width);
+            defaultColumn.setCellValueFactory(param -> new SimpleStringProperty(SearchService.instance().getDataList().indexOf(param.getValue().getValue()) + 1 + ""));
+            searchView.getColumns().add(defaultColumn);
+            // Add the customize Columns
             columns.forEach(columnName -> {
-                JFXTreeTableColumn<Entity, String> column = new JFXTreeTableColumn<>(columnName);
+                JFXTreeTableColumn<DownloadableEntity, String> column = new JFXTreeTableColumn<>(columnName);
                 column.setPrefWidth(width);
-                setUpCellValueFactory(column, (Entity e) -> e.getPropertyMap().get(columnName));
+                setUpCellValueFactory(column, (DownloadableEntity e) -> e.getPropertyMap().get(columnName));
                 if (entity.getColumnFactoryMap().containsKey(columnName) && entity.getColumnFactoryMap().get(columnName) != null)
                     column.setCellFactory(entity.getColumnFactoryMap().get(columnName));
                 searchView.getColumns().add(column);
@@ -168,8 +209,8 @@ public class TabViewController {
         });
     }
 
-    private void setUpCellValueFactory(JFXTreeTableColumn<Entity, String> column, Function<Entity, StringProperty> mapper) {
-        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Entity, String> param) -> {
+    private void setUpCellValueFactory(JFXTreeTableColumn<DownloadableEntity, String> column, Function<DownloadableEntity, StringProperty> mapper) {
+        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<DownloadableEntity, String> param) -> {
             if (column.validateValue(param)) {
                 return mapper.apply(param.getValue().getValue());
             } else {
@@ -178,40 +219,30 @@ public class TabViewController {
         });
     }
 
-    private ReadStringTask getSearchTask() {
-        switch (searchTypeButtonGroup.getSelectedData()) {
-            case KEYWORD:
-                return new ReadStringTask(searchTextField.getText(), getKeywordSearchEvent());
-            case ID:
-                return new ReadStringTask(searchTextField.getText(), getIDSearchEvent());
+    private SearchEvent getKeywordSearchEvent() {
+        switch (resultTypeButtonGroup.getSelectedData()) {
+            case PLAYLIST:
+                return new SearchEvent.KeywordPlaylistSearchEvent();
+            case SONG:
+                return new SearchEvent.KeywordSongSearchEvent();
+            case ALBUM:
+                return new SearchEvent.KeywordAlbumSearchEvent();
+            case ARTIST:
+                return new SearchEvent.KeywordArtistSearchEvent();
         }
         return null;
     }
 
-    private StringParamEvent getKeywordSearchEvent() {
+    private SearchEvent getIDSearchEvent() {
         switch (resultTypeButtonGroup.getSelectedData()) {
             case PLAYLIST:
-                return new StringParamEvent.KeywordPlaylistSearchEvent();
+                return new SearchEvent.IdPlaylistSearchEvent();
             case SONG:
-                return new StringParamEvent.KeywordSongSearchEvent();
+                return new SearchEvent.IdSongSearchEvent();
             case ALBUM:
-                return new StringParamEvent.KeywordAlbumSearchEvent();
+                return new SearchEvent.IdAlbumSearchEvent();
             case ARTIST:
-                return new StringParamEvent.KeywordArtistSearchEvent();
-        }
-        return null;
-    }
-
-    private StringParamEvent getIDSearchEvent() {
-        switch (resultTypeButtonGroup.getSelectedData()) {
-            case PLAYLIST:
-                return new StringParamEvent.IdPlaylistSearchEvent();
-            case SONG:
-                return new StringParamEvent.IdSongSearchEvent();
-            case ALBUM:
-                return new StringParamEvent.IdAlbumSearchEvent();
-            case ARTIST:
-                return new StringParamEvent.IdArtistSearchEvent();
+                return new SearchEvent.IdArtistSearchEvent();
         }
         return null;
     }
@@ -233,20 +264,27 @@ public class TabViewController {
         searchBox.getChildren().add(0, searchTextField);
     }
 
-    // TODO: Might need Entity Support Download
     @FXML
     public void downloadAll() {
         if (searchView.getRoot() == null)
             return;
-        for (TreeItem<Entity> songTreeItem : searchView.getRoot().getChildren()) {
-//            songTreeItem.getValue().download();
+        for (TreeItem<DownloadableEntity> entityTreeItem : searchView.getRoot().getChildren()) {
+            entityTreeItem.getValue().download();
         }
     }
 
     @FXML
     public void downloadSelected() {
-        for (TreeTablePosition<Entity, ?> cell : searchView.getSelectionModel().getSelectedCells()) {
-//            cell.getTreeItem().getValue().download();
+        for (TreeTablePosition<DownloadableEntity, ?> cell : searchView.getSelectionModel().getSelectedCells()) {
+            cell.getTreeItem().getValue().download();
         }
+    }
+
+    public JFXTreeTableView<DownloadableEntity> getSearchView() {
+        return searchView;
+    }
+
+    public JFXProgressBar getSearchProgress() {
+        return searchProgress;
     }
 }

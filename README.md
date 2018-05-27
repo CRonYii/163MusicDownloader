@@ -29,7 +29,7 @@ To build .jar executable
 $ mvn clean jfx:jar
 ```
 
-Please Note that, for JDK 9 or up, You must uses JFoenix v9.0.4 
+Please note that, for JDK 9 or up, You must uses JFoenix v9.0.4
 
 Change the jfoenix dependency in pox.xml to
 ```xml
@@ -42,5 +42,5 @@ Change the jfoenix dependency in pox.xml to
 
 # Release
 
-To uses 163Music v0.2, download the jar executable
-* [163Music v0.2](https://github.com/CRonYii/163MusicDownloader/releases)
+To uses 163Music without building, please download the jar executable
+* [163Music Release](https://github.com/CRonYii/163MusicDownloader/releases)

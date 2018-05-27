@@ -1,11 +1,10 @@
 package entity;
 
-import ui.Center;
-import ui.ClickableTreeTableCell;
-import ui.StringParamEvent;
+import ui.*;
 import util.Database;
 import util.Downloader;
 import util.Spider;
+import util.ThreadUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -13,15 +12,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Album extends Entity implements Serializable {
+public class Album extends DownloadableEntity implements Serializable {
 
     private static final long serialVersionUID = 503L;
 
     private static final List<String> columns = new ArrayList<>(Arrays.asList("Album Name", "Artist", "Action"));
     private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
-            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getId(), new StringParamEvent.IdAlbumSearchEvent())),
-            constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getArtist().getId(), new StringParamEvent.IdArtistSearchEvent())),
-            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getId(), new StringParamEvent.AlbumDownloadEvent()).setIsButton(true).setCustomName("Download"))
+            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getId(),
+                    id -> SearchService.create(id, new SearchEvent.IdAlbumSearchEvent()).load())),
+            constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getArtist().getId(),
+                    id -> SearchService.create(id, new SearchEvent.IdArtistSearchEvent()).load())),
+            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getId(),
+                    id -> ThreadUtils.startThread(new ReadStringTask(id, new DownloadEvent.AlbumDownloadEvent())))
+                    .setIsButton(true).setCustomName("Download"))
     ));
 
     private final String name;
@@ -42,9 +45,9 @@ public class Album extends Entity implements Serializable {
         artist.addAlbum(this);
     }
 
-    public void downloadAllSongs() {
+    public void download() {
         Downloader.downloader.downloadSong(getSongList());
-        Center.printToStatus(String.format("playlist id: %s, all songs added to download list\n", id));
+        Center.toast("Downloading all songs of Playlist " + name);
     }
 
     public String getName() {
@@ -104,4 +107,5 @@ public class Album extends Entity implements Serializable {
                 ", id='" + id + '\'' +
                 '}';
     }
+
 }

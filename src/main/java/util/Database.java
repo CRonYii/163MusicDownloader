@@ -13,7 +13,7 @@ import java.util.Map;
 public class Database implements Serializable {
 
 
-    public static final File OUTPUT = new File("./database.ser");
+    public static final File OUTPUT = new File("163MusicCache");
     private static final long serialVersionUID = 500L;
 
     public static final Database database = init();

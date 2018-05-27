@@ -8,20 +8,23 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.util.Callback;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Entity extends RecursiveTreeObject<Entity> implements Serializable {
+public abstract class Entity extends RecursiveTreeObject<DownloadableEntity> implements Serializable {
 
     private static final long serialVersionUID = 505L;
 
     protected static String NULL_GETTER = "nullGetter";
     protected static String NULL_SETTER = "nullSetter";
-    private transient final JavaBeanStringPropertyBuilder propertyBuilder = JavaBeanStringPropertyBuilder.create().bean(this);
+
+    protected transient Map<String, Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>>> columnFactoryMap = new HashMap<>();
     protected transient Map<String, StringProperty> propertyMap = new HashMap<>();
-    protected transient Map<String, Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>>> columnFactoryMap = new HashMap<>();
+    private transient JavaBeanStringPropertyBuilder propertyBuilder = JavaBeanStringPropertyBuilder.create().bean(this);
 
     protected Entity() {
         try {
@@ -29,6 +32,14 @@ public abstract class Entity extends RecursiveTreeObject<Entity> implements Seri
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException, NoSuchMethodException {
+        in.defaultReadObject();
+        propertyBuilder = JavaBeanStringPropertyBuilder.create().bean(this);
+        propertyMap = new HashMap<>();
+        columnFactoryMap = new HashMap<>();
+        bindProperty();
     }
 
     public static PropertyDefinition prop(String name) {
@@ -58,7 +69,7 @@ public abstract class Entity extends RecursiveTreeObject<Entity> implements Seri
             throw new IllegalArgumentException(String.format("Must have %s properties", getColumns().size()));
         for (int i = 0; i < columns.size(); i++) {
             propertyMap.put(columns.get(i), getProperty(properties.get(i)));
-            final Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>> cell = properties.get(i).getCell();
+            final Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>> cell = properties.get(i).getCell();
             if (cell != null)
                 columnFactoryMap.put(columns.get(i), cell);
         }
@@ -72,7 +83,7 @@ public abstract class Entity extends RecursiveTreeObject<Entity> implements Seri
         return propertyMap;
     }
 
-    public Map<String, Callback<TreeTableColumn<Entity, String>, TreeTableCell<Entity, String>>> getColumnFactoryMap() {
+    public Map<String, Callback<TreeTableColumn<DownloadableEntity, String>, TreeTableCell<DownloadableEntity, String>>> getColumnFactoryMap() {
         return columnFactoryMap;
     }
 

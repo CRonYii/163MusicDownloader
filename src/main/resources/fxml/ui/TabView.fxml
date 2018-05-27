@@ -56,7 +56,7 @@
             </VBox>
         </Tab>
         <Tab fx:id="downloadTab" text="Download">
-            <JFXListView fx:id="listView"/>
+            <JFXListView fx:id="downloadListView"/>
         </Tab>
     </JFXTabPane>
 </StackPane>
