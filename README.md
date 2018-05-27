@@ -24,7 +24,7 @@ To build 163Music, you will need:
 * [JDK 8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html) -Java Development Kit (version 8 or up)
 * [maven](http://maven.apache.org/) - Version 3 recommended
 
-To build .jar executable
+### To build .jar executable
 ```
 $ mvn clean jfx:jar
 ```
@@ -40,6 +40,13 @@ Change the jfoenix dependency in pox.xml to
 </dependency>
 ```
 
+### To build native .exe
+```
+$ mvn clean jfx:native
+```
+Which will build .exe Application based on your OS.
+
+For more Infomation, see [JavaFX Maven Plugin](https://github.com/javafx-maven-plugin/javafx-maven-plugin)
 # Release
 
 To uses 163Music without building, please download the jar executable
