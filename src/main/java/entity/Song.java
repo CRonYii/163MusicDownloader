@@ -1,9 +1,9 @@
 package entity;
 
-import ui.ClickableTreeTableCell;
-import ui.StringParamEvent;
+import ui.*;
 import util.Database;
 import util.Downloader;
+import util.ThreadUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -17,10 +17,15 @@ public class Song extends DownloadableEntity implements Serializable {
 
     private static final List<String> columns = new ArrayList<>(Arrays.asList("Song Name", "Artist", "Album", "Action"));
     private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
-            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getName(), new StringParamEvent.KeywordSongSearchEvent())),
-            constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getArtist().getId(), new StringParamEvent.IdArtistSearchEvent())),
-            constProp("album", "getAlbumName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getAlbum().getId(), new StringParamEvent.IdAlbumSearchEvent())),
-            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getId(), new StringParamEvent.SongDownloadEvent()).setIsButton(true).setCustomName("Download"))
+            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getName(),
+                    keyword -> SearchService.create(keyword, new SearchEvent.KeywordSongSearchEvent()).load())),
+            constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getArtist().getId(),
+                    id -> SearchService.create(id, new SearchEvent.IdArtistSearchEvent()).load())),
+            constProp("album", "getAlbumName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getAlbum().getId(),
+                    id -> SearchService.create(id, new SearchEvent.IdAlbumSearchEvent()).load())),
+            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getId(),
+                    id -> ThreadUtils.startThread(new ReadStringTask(id, new DownloadEvent.SongDownloadEvent())))
+                    .setIsButton(true).setCustomName("Download"))
     ));
 
     private final String name;

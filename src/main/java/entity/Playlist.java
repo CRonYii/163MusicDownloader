@@ -1,11 +1,10 @@
 package entity;
 
-import ui.Center;
-import ui.ClickableTreeTableCell;
-import ui.StringParamEvent;
+import ui.*;
 import util.Database;
 import util.Downloader;
 import util.Spider;
+import util.ThreadUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,8 +18,11 @@ public class Playlist extends DownloadableEntity implements Serializable {
 
     private static final List<String> columns = new ArrayList<>(Arrays.asList("Playlist Name", "Action"));
     private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
-            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Playlist) entity).getId(), new StringParamEvent.IdPlaylistSearchEvent())),
-            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Playlist) entity).getId(), new StringParamEvent.PlaylistDownloadEvent()).setIsButton(true).setCustomName("Download"))
+            constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Playlist) entity).getId(),
+                    id -> SearchService.create(id, new SearchEvent.IdPlaylistSearchEvent()).load())),
+            constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Playlist) entity).getId(),
+                    id -> ThreadUtils.startThread(new ReadStringTask(id, new DownloadEvent.PlaylistDownloadEvent())))
+                    .setIsButton(true).setCustomName("Download"))
     ));
 
     private final String id;

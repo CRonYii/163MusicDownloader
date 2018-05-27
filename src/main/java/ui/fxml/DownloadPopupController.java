@@ -10,8 +10,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ui.Center;
+import ui.DownloadEvent;
 import ui.ReadStringTask;
-import ui.StringParamEvent;
 import util.Database;
 import util.ThreadUtils;
 
@@ -22,22 +22,22 @@ public class DownloadPopupController {
 
     @FXML
     public void downloadPlaylist() {
-        promptEnterIDDialog(new StringParamEvent.PlaylistDownloadEvent(), "playlist", "All songs in the playlist will be downloaded");
+        promptEnterIDDialog(new DownloadEvent.PlaylistDownloadEvent(), "playlist", "All songs in the playlist will be downloaded");
     }
 
     @FXML
     public void downloadSong() {
-        promptEnterIDDialog(new StringParamEvent.SongDownloadEvent(), "song", "The Song will be downloaded");
+        promptEnterIDDialog(new DownloadEvent.SongDownloadEvent(), "song", "The Song will be downloaded");
     }
 
     @FXML
     public void downloadAlbum() {
-        promptEnterIDDialog(new StringParamEvent.AlbumDownloadEvent(), "album", "All songs in the album will be downloaded");
+        promptEnterIDDialog(new DownloadEvent.AlbumDownloadEvent(), "album", "All songs in the album will be downloaded");
     }
 
     @FXML
     public void downloadArtist() {
-        promptEnterIDDialog(new StringParamEvent.ArtistDownloadEvent(), "artist", "All songs of artist will be downloaded");
+        promptEnterIDDialog(new DownloadEvent.ArtistDownloadEvent(), "artist", "All songs of artist will be downloaded");
     }
 
     @FXML
@@ -50,7 +50,7 @@ public class DownloadPopupController {
         }
     }
 
-    private void promptEnterIDDialog(StringParamEvent task, String tag, String promptMsg) {
+    private void promptEnterIDDialog(DownloadEvent task, String tag, String promptMsg) {
         JFXAlert alert = new JFXAlert((Stage) Center.getRootWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setOverlayClose(false);
@@ -86,7 +86,7 @@ public class DownloadPopupController {
         alert.show();
     }
 
-    private void promptEnterURLDialog(StringParamEvent task, String promptMsg) {
+    private void promptEnterURLDialog(DownloadEvent task, String promptMsg) {
         JFXAlert alert = new JFXAlert((Stage) Center.getRootWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setOverlayClose(false);

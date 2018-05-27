@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableView;
 import entity.DownloadableEntity;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -129,7 +130,7 @@ public class Center {
         Center.rootScene = rootScene;
     }
 
-    public static void setSearchList(List<DownloadableEntity> searchList) {
+    public static void setSearchList(ObservableList<DownloadableEntity> searchList) {
         TabViewController.instance.setSearchList(searchList);
     }
 

@@ -28,7 +28,7 @@
             </right>
         </JFXToolbar>
         <StackPane VBox.vgrow="ALWAYS" fx:id="tabViewContainer"></StackPane>
-        <StackPane fx:id="toastContainer"></StackPane>
+        <StackPane fx:id="toastContainer" translateY="-20.0"></StackPane>
         <HBox prefHeight="0.0" prefWidth="248.0" alignment="CENTER">
             <padding>
                 <Insets left="5.0" right="5.0"/>

@@ -6,6 +6,7 @@ songs/
 log/
 temp/
 bin/
+163MusicCache
 *.ser
 
 # Maven
