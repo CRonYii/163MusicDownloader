@@ -18,14 +18,17 @@ public class Song extends DownloadableEntity implements Serializable {
     private static final List<String> columns = new ArrayList<>(Arrays.asList("Song Name", "Artist", "Album", "Action"));
     private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
             constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getName(),
-                    keyword -> SearchService.create(keyword, new SearchEvent.KeywordSongSearchEvent()).load())),
+                    keyword -> SearchService.create(keyword, new SearchEvent.KeywordSongSearchEvent()).load())
+                    .width(0.4)),
             constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getArtist().getId(),
-                    id -> SearchService.create(id, new SearchEvent.IdArtistSearchEvent()).load())),
+                    id -> SearchService.create(id, new SearchEvent.IdArtistSearchEvent()).load())
+                    .width(0.20)),
             constProp("album", "getAlbumName").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getAlbum().getId(),
-                    id -> SearchService.create(id, new SearchEvent.IdAlbumSearchEvent()).load())),
+                    id -> SearchService.create(id, new SearchEvent.IdAlbumSearchEvent()).load())
+                    .width(0.28)),
             constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Song) entity).getId(),
                     id -> ThreadUtils.startThread(new ReadStringTask(id, new DownloadEvent.SongDownloadEvent())))
-                    .setIsButton(true).setCustomName("Download"))
+                    .width(0.1).setIsButton(true).setCustomName("Download"))
     ));
 
     private final String name;

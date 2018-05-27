@@ -8,8 +8,8 @@
            xmlns="http://javafx.com/javafx"
            fx:controller="ui.fxml.TabViewController"
            prefHeight="400.0" prefWidth="600.0">
-    <JFXTabPane VBox.vgrow="ALWAYS" tabMinWidth="500">
-        <Tab text="Search">
+    <JFXTabPane fx:id="tabPane" VBox.vgrow="ALWAYS">
+        <Tab fx:id="searchTab" text="Search">
             <VBox>
                 <JFXDialogLayout>
                     <body>

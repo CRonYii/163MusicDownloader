@@ -13,11 +13,16 @@ public class ClickableTreeTableCell extends TreeTableCell<DownloadableEntity, St
     private final StringParamEvent event;
     private boolean isButton = false;
     private String customName = "";
+    private double widthRatio;
 
     public ClickableTreeTableCell(Function<DownloadableEntity, String> getParamFunction, StringParamEvent event) {
         this.getParamFunction = getParamFunction;
         this.event = event;
+        this.parentProperty().addListener(l -> this.getTableColumn().setPrefWidth((Main.WIDTH_PROPERTY.get() - 50.0) * widthRatio));
+        // Default Width Ration
+        width(0.2);
     }
+
 
     @Override
     protected void updateItem(String name, boolean empty) {
@@ -64,6 +69,18 @@ public class ClickableTreeTableCell extends TreeTableCell<DownloadableEntity, St
 
     public String getCustomName() {
         return customName;
+    }
+
+    public double getWidthRatio() {
+        return widthRatio;
+    }
+
+    public ClickableTreeTableCell width(double widthRatio) {
+        this.widthRatio = widthRatio;
+        Main.WIDTH_PROPERTY.addListener(listener -> {
+            this.getTableColumn().setPrefWidth((Main.WIDTH_PROPERTY.get() - 50.0) * widthRatio);
+        });
+        return this;
     }
 
     public ClickableTreeTableCell setCustomName(String customName) {

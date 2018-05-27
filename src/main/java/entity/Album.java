@@ -19,12 +19,14 @@ public class Album extends DownloadableEntity implements Serializable {
     private static final List<String> columns = new ArrayList<>(Arrays.asList("Album Name", "Artist", "Action"));
     private static final List<PropertyDefinition> properties = new ArrayList<>(Arrays.asList(
             constProp("name").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getId(),
-                    id -> SearchService.create(id, new SearchEvent.IdAlbumSearchEvent()).load())),
+                    id -> SearchService.create(id, new SearchEvent.IdAlbumSearchEvent()).load())
+                    .width(0.44)),
             constProp("artist", "getArtistName").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getArtist().getId(),
-                    id -> SearchService.create(id, new SearchEvent.IdArtistSearchEvent()).load())),
+                    id -> SearchService.create(id, new SearchEvent.IdArtistSearchEvent()).load())
+                    .width(0.44)),
             constProp("id").setCell(param -> new ClickableTreeTableCell(entity -> ((Album) entity).getId(),
                     id -> ThreadUtils.startThread(new ReadStringTask(id, new DownloadEvent.AlbumDownloadEvent())))
-                    .setIsButton(true).setCustomName("Download"))
+                    .width(0.1).setIsButton(true).setCustomName("Download"))
     ));
 
     private final String name;

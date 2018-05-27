@@ -6,7 +6,7 @@ import entity.DownloadableEntity;
 import entity.Entity;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -55,6 +55,8 @@ public class TabViewController {
     @FXML
     private Tab downloadTab;
     @FXML
+    private TabPane tabPane;
+    @FXML
     private JFXButton downloadSelectedButton;
 
     public static TabViewController instance;
@@ -84,6 +86,11 @@ public class TabViewController {
                 () -> String.format("Download (%s)", Downloader.downloader.getDownloadList().size()),
                 Downloader.downloader.getDownloadList())
         );
+
+        Main.addOnShowEvent(() -> {
+            tabPane.setTabMinWidth(Main.WIDTH_PROPERTY.get() * 0.5);
+            Main.WIDTH_PROPERTY.addListener(listener -> tabPane.setTabMinWidth(Main.WIDTH_PROPERTY.get() * 0.5));
+        });
 
         downloadSelectedButton.disableProperty().bind(Bindings.createBooleanBinding(() -> searchView.getSelectionModel().getSelectedItems().size() == 0, searchView.getSelectionModel().getSelectedItems()));
     }
@@ -191,11 +198,11 @@ public class TabViewController {
             Entity entity = dataList.get(0);
 
             List<String> columns = entity.getColumns();
-            double width = Main.WIDTH / columns.size() + 1;
+            double width = Main.WIDTH / columns.size();
             // Add the default id (auto-increment) Column
-            JFXTreeTableColumn<DownloadableEntity, String> defaultColumn = new JFXTreeTableColumn<>("#");
-            defaultColumn.setPrefWidth(width);
-            defaultColumn.setCellValueFactory(param -> new SimpleStringProperty(SearchService.instance().getDataList().indexOf(param.getValue().getValue()) + 1 + ""));
+            JFXTreeTableColumn<DownloadableEntity, Integer> defaultColumn = new JFXTreeTableColumn<>("#");
+            defaultColumn.setPrefWidth(50.0);
+            defaultColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(SearchService.instance().getDataList().indexOf(param.getValue().getValue()) + 1));
             searchView.getColumns().add(defaultColumn);
             // Add the customize Columns
             columns.forEach(columnName -> {

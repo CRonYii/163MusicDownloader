@@ -115,6 +115,7 @@ public class Downloader {
         return downloadList;
     }
 
+    // TODO: might implements Entity and use TreeTableView to display
     public class Download extends Task<Void> {
 
         private final Song song;
@@ -161,11 +162,6 @@ public class Downloader {
                 }
             }
         }
-
-//        @Override
-//        public void run() {
-//            call();
-//        }
 
         @Override
         protected Void call() {
