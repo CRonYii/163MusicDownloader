@@ -1,12 +1,10 @@
 package util;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import sun.misc.BASE64Encoder;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +16,8 @@ public class EncryptUtils {
             "575cce10b424d813cfe4875d3e82047b97ddef52741d546b8e289dc6935b" +
             "3ece0462db0a22b8e7";
 
+    private final static String randomChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     private final static String nonce = "0CoJUm6Qyw8W8jud";
     private final static String pubKey = "010001";
 
@@ -25,7 +25,7 @@ public class EncryptUtils {
     private static final String ENCSECKEY = "encSecKey";
 
     public static Map<String, String> encrypt(String text) {
-        String secKey = RandomStringUtils.random(16, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        String secKey = getRandomString(16);
         String encText = aesEncrypt(aesEncrypt(text, nonce), secKey);
         String encSecKey = rsaEncrypt(secKey, pubKey, modulus);
 
@@ -45,7 +45,7 @@ public class EncryptUtils {
 
             byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
 
-            return new BASE64Encoder().encode(encrypted);
+            return new String(Base64.getEncoder().encode(encrypted));
         } catch (Exception e) {
             return "";
         }
@@ -64,6 +64,14 @@ public class EncryptUtils {
             }
             return r.toString();
         }
+    }
+
+    private static String getRandomString(int length) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(randomChars.charAt((int) (Math.random() * randomChars.length())));
+        }
+        return sb.toString();
     }
 
 }
