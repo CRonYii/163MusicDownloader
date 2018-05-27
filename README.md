@@ -46,7 +46,7 @@ $ mvn clean jfx:native
 ```
 Which will build .exe Application based on your OS.
 
-For more Infomation, see [JavaFX Maven Plugin]https://github.com/javafx-maven-plugin/javafx-maven-plugin)
+For more Infomation, see [JavaFX Maven Plugin](https://github.com/javafx-maven-plugin/javafx-maven-plugin)
 # Release
 
 To uses 163Music without building, please download the jar executable
